@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reporting Cargill</title>
+<meta name="description" content="Comptes rendus d'intervention et reporting hebdomadaire des work orders.">
+<meta name="theme-color" content="#1D3557">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reporting">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout : une colonne de travail (680px max), barre navy en haut, actions principales en bas d'écran, gros boutons utilisables avec des gants. */
+:root{
+  color-scheme: light;
+  --bg:#ECEFF3; --card:#FFFFFF; --card2:#F5F7FA; --ink:#132030; --ink2:#2C3B4C; --muted:#5D6D7E; --line:#D4DBE3; --soft:#E5EAF0;
+  --navy:#1D3557; --on-navy:#FFFFFF; --on-navy-2:#B7C7DA; --navy-soft:#DCE5F0;
+  --amber:#F2A900; --on-amber:#1B1400; --amber-soft:#FFF0C7; --amber-line:#D99A00; --warn-ink:#7A4F00;
+  --ok:#2C7A4D; --ok-soft:#DDF0E4; --danger:#B3261E; --on-danger:#FFFFFF; --danger-soft:#FBE3E0;
+  --focus:#2F6FDE;
+  --shadow:0 1px 2px rgba(19,32,48,.07),0 6px 18px rgba(19,32,48,.06);
+  --f-display:"Barlow Condensed","Roboto Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --gl:max(16px,env(safe-area-inset-left,0px)); --gr:max(16px,env(safe-area-inset-right,0px));
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0C1218; --card:#151E28; --card2:#1A2430; --ink:#E7EDF3; --ink2:#C9D3DD; --muted:#8FA0B1; --line:#283646; --soft:#1F2A37;
+    --navy:#12263F; --on-navy:#FFFFFF; --on-navy-2:#9DB2CA; --navy-soft:#1A2D45;
+    --amber:#F5B52A; --on-amber:#1B1400; --amber-soft:#382C0E; --amber-line:#C99210; --warn-ink:#F7C95C;
+    --ok:#62C48E; --ok-soft:#163325; --danger:#FF8F85; --on-danger:#2A0907; --danger-soft:#3B1714;
+    --focus:#82B2FF;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#0C1218; --card:#151E28; --card2:#1A2430; --ink:#E7EDF3; --ink2:#C9D3DD; --muted:#8FA0B1; --line:#283646; --soft:#1F2A37;
+    --navy:#12263F; --on-navy:#FFFFFF; --on-navy-2:#9DB2CA; --navy-soft:#1A2D45;
+    --amber:#F5B52A; --on-amber:#1B1400; --amber-soft:#382C0E; --amber-line:#C99210; --warn-ink:#F7C95C;
+    --ok:#62C48E; --ok-soft:#163325; --danger:#FF8F85; --on-danger:#2A0907; --danger-soft:#3B1714;
+    --focus:#82B2FF;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:16px;line-height:1.4;min-height:100dvh;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+img{max-width:100%;display:block}
+:focus-visible{outline:2.5px solid var(--focus);outline-offset:2px}
+[hidden]{display:none!important}
+.num,.mono{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono)}
+svg.ic{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Barre du haut */
+.topbar{position:sticky;top:0;z-index:30;background:var(--navy);color:var(--on-navy);padding-top:env(safe-area-inset-top,0px)}
+.topbar-in{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:10px;min-height:60px;padding-left:var(--gl);padding-right:var(--gr)}
+.tb-title{flex:1;min-width:0}
+.tb-title b{display:block;font-family:var(--f-display);font-weight:600;font-size:21px;letter-spacing:.01em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-title small{display:block;color:var(--on-navy-2);font-size:13.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;color:inherit;flex:none}
+.icon-btn:active{background:rgba(255,255,255,.12)}
+
+.wrap{max-width:680px;margin:0 auto;padding:16px var(--gr) 136px var(--gl);display:flex;flex-direction:column;gap:16px}
+
+/* Boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 18px;border-radius:12px;font-weight:600;font-size:16.5px;line-height:1.15;text-align:center;border:1.5px solid transparent;text-decoration:none}
+.btn-primary{background:var(--amber);color:var(--on-amber);border-color:var(--amber-line)}
+.btn-primary:active{filter:brightness(.94)}
+.btn-big{min-height:60px;font-size:18px;width:100%;font-family:var(--f-display);font-weight:700;letter-spacing:.01em;font-size:20px}
+.btn-secondary{background:var(--card);color:var(--ink);border-color:var(--line)}
+.btn-secondary:active{background:var(--soft)}
+.btn-navy{background:var(--navy);color:var(--on-navy)}
+.btn-ghost{color:var(--ink2);border-color:transparent;background:transparent}
+.btn-danger{color:var(--danger);background:transparent;border-color:var(--line)}
+.btn-danger-fill{background:var(--danger);color:var(--on-danger)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.link{color:var(--focus);font-weight:600;text-decoration:underline;text-underline-offset:2px;font-size:inherit}
+
+/* Accueil */
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:2px}
+.sec-head h2{margin:0;font-family:var(--f-display);font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:.04em}
+.chip-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-weight:600;font-size:15px;color:var(--ink2)}
+
+/* Semaine */
+.week{background:var(--card);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.wk-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;width:100%;padding:12px 16px;text-align:left;background:var(--card2);border-bottom:1px solid var(--line)}
+.week.current .wk-head{background:var(--navy);color:var(--on-navy);border-bottom-color:transparent}
+.wk-no{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;height:58px;border-radius:12px;border:2px solid currentColor;line-height:1}
+.wk-no small{font-family:var(--f-display);font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;opacity:.8}
+.wk-no b{font-family:var(--f-display);font-size:30px;font-weight:700}
+.wk-dates{min-width:0;display:flex;flex-direction:column;gap:1px}
+.wk-dates small{font-family:var(--f-display);font-size:13px;text-transform:uppercase;letter-spacing:.09em;font-weight:600;color:var(--amber)}
+.wk-dates b{font-family:var(--f-display);font-weight:700;font-size:20px;text-transform:uppercase;letter-spacing:.03em;line-height:1.1}
+.wk-dates span{font-size:14.5px;opacity:.82}
+.wk-tot{text-align:right}
+.wk-tot b{display:block;font-family:var(--f-mono);font-weight:600;font-size:18px}
+.wk-tot span{display:block;font-size:13px;opacity:.78}
+.wk-foot{display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.wk-foot .btn{flex:1 1 220px}
+.sent{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--ok);font-weight:600}
+.sent svg.ic{width:16px;height:16px}
+
+/* Jour (s'ouvre dans la semaine) */
+.day{border-top:1px solid var(--line);scroll-margin-top:84px}
+.day:first-child{border-top:0}
+.day.open{background:var(--card2)}
+.day-head{display:grid;grid-template-columns:minmax(0,1fr) auto 20px;align-items:center;gap:12px;width:100%;min-height:64px;padding:10px 16px;text-align:left;cursor:pointer}
+.dh-send{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--navy);color:var(--on-navy);font-weight:700;font-size:14px}
+.dh-send svg.ic{width:16px;height:16px}
+.seg-ctl{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:12px;background:var(--soft)}
+.seg-ctl button{min-height:46px;border-radius:9px;font-weight:600;color:var(--ink2)}
+.seg-ctl button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.day-head:active{background:var(--soft)}
+.dh-name{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dh-name b{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;font-size:17px;line-height:1.2}
+.dh-name small{font-size:14px;color:var(--muted)}
+.day.empty .dh-name b{font-weight:600;color:var(--ink2)}
+.today-pill{font-family:var(--f-display);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:999px;background:var(--amber);color:var(--on-amber)}
+.dh-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.dh-right b{font-family:var(--f-mono);font-weight:600;font-size:16px}
+.dh-chev{color:var(--muted);display:grid;place-items:center;transition:transform .2s}
+.dh-chev svg.ic{width:20px;height:20px}
+.day.open .dh-chev{transform:rotate(90deg)}
+.st{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.st svg.ic{width:14px;height:14px}
+.st-ok{background:var(--ok-soft);color:var(--ok)}
+.st-todo{background:var(--amber-soft);color:var(--warn-ink)}
+.day-body{display:flex;flex-direction:column;gap:10px;padding:0 16px 16px}
+.items{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.it{display:grid;grid-template-columns:80px minmax(0,1fr) auto;gap:10px;align-items:start;width:100%;padding:12px;text-align:left;border-top:1px solid var(--line)}
+.it:first-child{border-top:0}
+.it:active{background:var(--soft)}
+.it-time{font-family:var(--f-mono);font-weight:600;font-size:13.5px;color:var(--ink2);padding-top:2px}
+.it-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.it-title{font-weight:600;font-size:15.5px;line-height:1.3;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.it-sub{font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+.it-sub .wo{font-family:var(--f-mono);font-weight:600;color:var(--ink2)}
+.it-dur{font-family:var(--f-mono);font-weight:600;font-size:15px;padding-top:1px}
+
+/* Barre d'actions en bas (formulaire) */
+.actionbar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -6px 18px rgba(19,32,48,.06)}
+.actionbar-in{max-width:680px;margin:0 auto;display:flex;gap:10px;padding:10px var(--gr) 10px var(--gl)}
+.actionbar-in .btn{flex:1}
+.ab-err{max-width:680px;margin:0 auto;padding:10px var(--gr) 0 var(--gl);color:var(--danger);font-weight:600;font-size:14.5px}
+
+/* Formulaire */
+.fsec{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:14px}
+.fsec-title{font-family:var(--f-display);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.05em;margin:0;display:flex;align-items:center;gap:8px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field > label,.lbl{font-family:var(--f-display);font-weight:600;font-size:14.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2)}
+.inp,select.inp,textarea.inp{width:100%;min-height:50px;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);font-size:16.5px}
+textarea.inp{min-height:96px;resize:vertical;line-height:1.4}
+select.inp{appearance:none;-webkit-appearance:none;padding-right:38px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
+.inp:focus{border-color:var(--focus);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 22%,transparent)}
+.inp.mono{font-family:var(--f-mono);font-weight:500;letter-spacing:.03em}
+.inp[disabled]{opacity:.55}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hint{font-size:14px;color:var(--muted);line-height:1.35}
+.hint .link{font-size:14px}
+.read-tag{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;color:var(--ok);margin-left:6px;text-transform:none;letter-spacing:0;font-family:var(--f-body)}
+.date-btn{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);text-align:left}
+.date-btn b{display:block;font-weight:600;font-size:17px}
+.date-btn small{display:block;color:var(--muted);font-size:14px}
+.date-btn .ic{color:var(--ink2)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:40px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card2);font-weight:600;font-size:14.5px;font-family:var(--f-mono);color:var(--ink2)}
+.chip.on{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.chip span{font-family:var(--f-body)}
+
+.wo-drop{border:2px dashed var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--card2)}
+.wo-drop p{margin:0;font-size:14.5px;color:var(--muted)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn-row > *{flex:1 1 140px}
+.btn-row.stack > *{flex-basis:100%}
+.file-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--card);border:1.5px solid var(--line);min-width:0}
+.file-chip .fc-name{flex:1;min-width:0;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-chip .fc-name small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.file-chip button{font-weight:600;color:var(--focus);font-size:14.5px;padding:6px 4px}
+.progress{height:8px;border-radius:4px;background:var(--soft);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--amber);width:0;transition:width .3s}
+.progress.indet i{width:35%;animation:indet 1.2s ease-in-out infinite}
+@keyframes indet{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+.found{display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+.found .ok{color:var(--ok);font-weight:600}
+.conflict{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 10px;border-radius:8px;background:var(--amber-soft)}
+.conflict span{min-width:0;overflow-wrap:anywhere}
+.conflict button{flex:none}
+
+.hist{border-radius:10px;background:var(--navy-soft);padding:10px 12px;font-size:14.5px;display:flex;flex-direction:column;gap:6px}
+.hist b{font-weight:700}
+
+.mic-wrap{position:relative}
+.mic-wrap textarea{padding-right:64px}
+.mic{position:absolute;right:8px;top:8px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--navy);color:var(--on-navy)}
+.mic.on{background:var(--danger);color:#fff;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 45%,transparent)}50%{box-shadow:0 0 0 10px transparent}}
+.mic-state{font-size:14px;color:var(--danger);font-weight:600}
+
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ph{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--soft);max-width:100%}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph .rm{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;background:rgba(10,16,24,.7);color:#fff;display:grid;place-items:center}
+.ph .rm svg.ic{width:18px;height:18px}
+.ph-add{aspect-ratio:1;border-radius:10px;border:2px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:14px;color:var(--ink2);background:var(--card2);cursor:pointer;max-width:100%}
+
+details.more{border-top:1px solid var(--line);padding-top:12px}
+details.more summary{cursor:pointer;font-weight:600;color:var(--ink2);list-style:none;display:flex;align-items:center;gap:8px;min-height:36px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:"+";font-family:var(--f-mono);font-weight:600;width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);display:grid;place-items:center;font-size:15px}
+details.more[open] summary::before{content:"−"}
+details.more .field{margin-top:12px}
+
+.banner{background:var(--amber-soft);border:1.5px solid var(--amber-line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+.banner .btn-row .btn{min-height:44px}
+.danger-zone{display:flex;justify-content:center}
+
+/* Feuille du bas */
+.backdrop{position:fixed;inset:0;background:rgba(8,12,18,.48);z-index:40;opacity:0;transition:opacity .2s}
+.backdrop.show{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--card);border-radius:20px 20px 0 0;max-height:92dvh;overflow:auto;transform:translateY(100%);transition:transform .25s ease;padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet.show{transform:none}
+.sheet-in{max-width:680px;margin:0 auto;padding:10px var(--gr) 20px var(--gl);display:flex;flex-direction:column;gap:14px}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:2px auto 4px}
+.sh-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.sh-head h3{margin:0;font-family:var(--f-display);font-weight:700;font-size:23px;line-height:1.1;text-wrap:balance}
+.sh-head p{margin:4px 0 0;color:var(--muted);font-size:15px}
+.loading{display:flex;flex-direction:column;gap:10px;padding:10px 0;color:var(--muted)}
+.pdf-pages{display:flex;flex-direction:column;gap:12px}
+.pdf-pages img{width:100%;border-radius:6px;box-shadow:var(--shadow);background:#fff;border:1px solid var(--line)}
+
+/* Calendrier */
+.cal-nav{display:flex;align-items:center;justify-content:space-between}
+.cal-nav b{font-family:var(--f-display);font-weight:700;font-size:21px;text-transform:capitalize}
+.cal-nav .icon-btn{border:1.5px solid var(--line);color:var(--ink)}
+.cal{display:grid;grid-template-columns:34px repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.cal .h{font-family:var(--f-display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:4px 0}
+.cal .wn{font-family:var(--f-mono);font-size:12px;color:var(--muted);display:grid;place-items:center}
+.cal button.d{position:relative;height:46px;border-radius:10px;font-weight:600;font-size:16.5px;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.cal button.d.out{color:var(--muted);opacity:.5}
+.cal button.d.tdy{box-shadow:inset 0 0 0 2px var(--amber)}
+.cal button.d.sel{background:var(--navy);color:var(--on-navy)}
+.cal button.d.has::after{content:"";position:absolute;bottom:6px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--amber)}
+.cal button.d:active{background:var(--soft)}
+
+/* Réglages */
+.set-list{display:flex;flex-direction:column;gap:14px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px}
+.toggle input{width:24px;height:24px;accent-color:var(--navy)}
+.small{font-size:13.5px;color:var(--muted)}
+
+/* Toast */
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:60;background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;font-weight:600;font-size:15px;width:max-content;max-width:min(92vw,520px);text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:var(--shadow)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.err{background:var(--danger);color:var(--on-danger)}
+
+@media (min-width:560px){ .today-actions{grid-template-columns:auto auto;justify-content:start} }
+@media (max-width:380px){ .row2{grid-template-columns:1fr} .wk-no{min-width:50px;height:52px} .wk-no b{font-size:26px} }
+@media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="sheetRoot"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ==========================================================================
+   Reporting Cargill — comptes rendus d'intervention
+   Toutes les données restent sur le téléphone (IndexedDB).
+   ========================================================================== */
+
+const CONFIG = {
+  /* Envoi direct par Gmail (optionnel) : colle ici l'ID client OAuth Google.
+     Voir LISEZMOI.md, section « Envoi direct depuis Gmail ». Laisse vide pour
+     passer par le partage du téléphone (Gmail avec le PDF déjà joint). */
+  googleClientId: ''
+};
+const APP_VERSION = '1.1';
+const PREVIEW = false; // true uniquement pour l'aperçu publié sur Claude
+const DEMO_WO_B64 = '';
+const LIBS = {
+  jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+  autotable: 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js',
+  pdfjs: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',
+  pdfjsWorker: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js',
+  tesseract: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
+  gis: 'https://accounts.google.com/gsi/client'
+};
+
+/* ---------- Petits outils ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const pad = n => String(n).padStart(2, '0');
+const plural = (n, one, many) => `${n} ${n > 1 ? many : one}`;
+let debTimers = {};
+const debounce = (key, fn, ms = 400) => { clearTimeout(debTimers[key]); debTimers[key] = setTimeout(fn, ms); };
+
+const ICONS = {
+  back: '<path d="M15 18l-6-6 6-6"/>',
+  chev: '<path d="M9 18l6-6-6-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  cal: '<rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+  mic: '<rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/>',
+  stop: '<rect x="7" y="7" width="10" height="10" rx="1.5"/>',
+  cam: '<path d="M4 7.5h3l1.5-2.5h7L17 7.5h3a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/>',
+  img: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 16l-5-5-9 9"/>',
+  file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  send: '<path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/>',
+  dl: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  sliders: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
+};
+const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* ---------- Dates & heures ---------- */
+const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const DAYS_SHORT = ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'];
+const keyOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fromKey = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; };
+const mondayOf = d => addDays(d, -((d.getDay() + 6) % 7));
+const todayKey = () => keyOf(new Date());
+function isoWeek(d) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y = t.getUTCFullYear(); const y0 = new Date(Date.UTC(y, 0, 1));
+  return { week: Math.ceil(((t - y0) / 864e5 + 1) / 7), year: y };
+}
+const dnum = d => d.getDate() === 1 ? '1er' : String(d.getDate());
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const fmtLong = d => `${DAYS[d.getDay()]} ${dnum(d)} ${MONTHS[d.getMonth()]}`;
+const fmtLongY = d => `${fmtLong(d)} ${d.getFullYear()}`;
+const fmtShort = d => `${DAYS_SHORT[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
+const fmtNum = d => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+function weekLabel(mon, withWeekend) {
+  const end = addDays(mon, withWeekend ? 6 : 4);
+  if (mon.getMonth() === end.getMonth()) return `du ${dnum(mon)} au ${dnum(end)} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+  const y1 = mon.getFullYear() !== end.getFullYear() ? ' ' + mon.getFullYear() : '';
+  return `du ${dnum(mon)} ${MONTHS[mon.getMonth()]}${y1} au ${dnum(end)} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+}
+const toMin = t => { if (!t) return null; const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const fromMin = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+const fmtH = t => { const m = toMin(t); if (m == null) return ''; const h = Math.floor(m / 60), mm = m % 60; return mm ? `${h}h${pad(mm)}` : `${h}h`; };
+const fmtRange = (a, b) => a && b ? `${fmtH(a)}–${fmtH(b)}` : a ? `à partir de ${fmtH(a)}` : 'À préciser';
+const fmtDur = m => { if (m == null || isNaN(m)) return '—'; const h = Math.floor(m / 60), mm = Math.round(m % 60); return `${h}h${pad(mm)}`; };
+const fmtDec = m => m == null ? '' : (m / 60).toFixed(2).replace('.', ',');
+
+/* ---------- Stockage local (IndexedDB) ---------- */
+const DB = {
+  db: null, mem: { reports: new Map(), files: new Map(), kv: new Map() },
+  open() {
+    return Promise.race([DB._open(), new Promise(r => setTimeout(() => r(false), 2500))]);
+  },
+  _open() {
+    return new Promise(res => {
+      if (!('indexedDB' in window)) return res(false);
+      let r;
+      try { r = indexedDB.open('reporting-cargill', 1); } catch (e) { return res(false); }
+      r.onupgradeneeded = () => {
+        const d = r.result;
+        if (!d.objectStoreNames.contains('reports')) d.createObjectStore('reports', { keyPath: 'id' });
+        if (!d.objectStoreNames.contains('files')) d.createObjectStore('files', { keyPath: 'id' });
+        if (!d.objectStoreNames.contains('kv')) d.createObjectStore('kv', { keyPath: 'k' });
+      };
+      r.onsuccess = () => { DB.db = r.result; res(true); };
+      r.onerror = () => res(false);
+    });
+  },
+  _req(r) { return new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  _st(s, mode = 'readonly') { return DB.db.transaction(s, mode).objectStore(s); },
+  all(s) { return DB.db ? DB._req(DB._st(s).getAll()) : Promise.resolve([...DB.mem[s].values()]); },
+  get(s, k) { return DB.db ? DB._req(DB._st(s).get(k)) : Promise.resolve(DB.mem[s].get(k)); },
+  put(s, v) { if (!DB.db) { DB.mem[s].set(v.id ?? v.k, v); return Promise.resolve(); } return DB._req(DB._st(s, 'readwrite').put(v)); },
+  del(s, k) { if (!DB.db) { DB.mem[s].delete(k); return Promise.resolve(); } return DB._req(DB._st(s, 'readwrite').delete(k)); },
+  async getKV(k, def) { const r = await DB.get('kv', k); return r ? r.v : def; },
+  setKV(k, v) { return DB.put('kv', { k, v }); }
+};
+
+/* ---------- État ---------- */
+const DEFAULT_SETTINGS = {
+  name: 'Dimitri Van Calster', company: 'Cargill', site: '',
+  managerName: '', managerEmail: '',
+  dayStart: '07:00', dayEnd: '15:00', lunchStart: '12:00', lunchEnd: '13:00',
+  pdfPhotos: true, gmailGranted: false, sendMode: 'week'
+};
+const S = { settings: { ...DEFAULT_SETTINGS }, reports: [], sent: {}, openWeeks: new Set(), openDays: new Set([todayKey()]), extraWeeks: new Set(), focusDay: null, route: null, prevRoute: null, };
+const urlCache = new Map();
+async function fileURL(id) {
+  if (urlCache.has(id)) return urlCache.get(id);
+  const rec = await DB.get('files', id); if (!rec) return null;
+  const u = URL.createObjectURL(rec.blob); urlCache.set(id, u); return u;
+}
+const saveSettings = () => debounce('settings', () => DB.setKV('settings', S.settings), 300);
+
+/* ---------- Calculs ---------- */
+function autoDuration(start, end) {
+  const a = toMin(start), b = toMin(end);
+  if (a == null || b == null || b <= a) return null;
+  let d = b - a;
+  const ls = toMin(S.settings.lunchStart), le = toMin(S.settings.lunchEnd);
+  if (ls != null && le != null && le > ls) d -= Math.max(0, Math.min(b, le) - Math.max(a, ls));
+  return Math.max(0, d);
+}
+const lunchOverlap = (start, end) => { const a = toMin(start), b = toMin(end), ls = toMin(S.settings.lunchStart), le = toMin(S.settings.lunchEnd); return a != null && b != null && ls != null && le != null && Math.min(b, le) - Math.max(a, ls) > 0; };
+const normWO = s => (s || '').toUpperCase().replace(/^\s*(WO|OT|N°|NO)[\s.:#-]*/, '').replace(/[^A-Z0-9]/g, '');
+function cmpReports(a, b) {
+  if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+  const sa = toMin(a.start) ?? 9999, sb = toMin(b.start) ?? 9999;
+  if (sa !== sb) return sa - sb;
+  return (a.createdAt || 0) - (b.createdAt || 0);
+}
+function cumulMap() {
+  const by = {}, out = {};
+  for (const r of S.reports) { const w = normWO(r.wo); if (w) (by[w] = by[w] || []).push(r); }
+  for (const w in by) {
+    let run = 0;
+    for (const r of by[w].sort(cmpReports)) { run = r.cumulManual != null ? r.cumulManual : run + (r.duration || 0); out[r.id] = run; }
+  }
+  return out;
+}
+function woHistory(wo, draft) {
+  const w = normWO(wo); if (!w) return null;
+  const all = S.reports.filter(r => r.id !== draft.id && normWO(r.wo) === w).sort(cmpReports);
+  let prev = 0; const before = [];
+  for (const r of all) if (cmpReports(r, draft) < 0) { prev = r.cumulManual != null ? r.cumulManual : prev + (r.duration || 0); before.push(r); }
+  return { all, before, prev };
+}
+const reportsOn = k => S.reports.filter(r => r.date === k).sort(cmpReports);
+const sumDur = rs => rs.reduce((s, r) => s + (r.duration || 0), 0);
+
+/* ---------- Interface : toast, feuilles ---------- */
+function toast(msg, kind = '') {
+  const t = $('#toast'); t.textContent = msg; t.className = 'show ' + kind;
+  clearTimeout(toast._t); toast._t = setTimeout(() => { t.className = ''; }, kind === 'err' ? 5200 : 3400);
+}
+function openSheet(html, { onClose } = {}) {
+  closeSheet(true);
+  const root = $('#sheetRoot');
+  root.innerHTML = `<div class="backdrop" data-act="sheet-close"></div><div class="sheet" role="dialog" aria-modal="true"><div class="sheet-in"><div class="grab"></div>${html}</div></div>`;
+  S.sheetClose = onClose || null;
+  requestAnimationFrame(() => { $('.backdrop', root)?.classList.add('show'); $('.sheet', root)?.classList.add('show'); });
+  return $('.sheet-in', root);
+}
+function closeSheet(instant) {
+  const root = $('#sheetRoot'); if (!root.firstChild) return;
+  const cb = S.sheetClose; S.sheetClose = null;
+  if (instant) { root.innerHTML = ''; } else {
+    $('.backdrop', root)?.classList.remove('show'); $('.sheet', root)?.classList.remove('show');
+    setTimeout(() => { if (!$('.sheet.show', root)) root.innerHTML = ''; }, 260);
+  }
+  if (cb) cb();
+}
+function confirmSheet({ title, text, ok = 'Confirmer', danger = false }) {
+  return new Promise(res => {
+    let done = false;
+    const el = openSheet(`<div class="sh-head"><div><h3>${esc(title)}</h3>${text ? `<p>${esc(text)}</p>` : ''}</div></div>
+      <div class="btn-row"><button class="btn btn-secondary" data-r="0">Annuler</button><button class="btn ${danger ? 'btn-danger-fill' : 'btn-primary'}" data-r="1">${esc(ok)}</button></div>`,
+      { onClose: () => { if (!done) { done = true; res(false); } } });
+    $$('[data-r]', el).forEach(b => b.onclick = () => { done = true; res(b.dataset.r === '1'); closeSheet(); });
+  });
+}
+
+/* ---------- Calendrier ---------- */
+function openCalendar(selKey, onPick, title = 'Choisir une date') {
+  let cur = fromKey(selKey || todayKey()); cur = new Date(cur.getFullYear(), cur.getMonth(), 1);
+  const has = new Set(S.reports.map(r => r.date));
+  const el = openSheet(`<div class="sh-head"><h3>${esc(title)}</h3><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div><div id="calBox"></div>
+    <button class="btn btn-secondary" id="calToday">Aujourd'hui</button>`);
+  const draw = () => {
+    const first = mondayOf(cur); const tk = todayKey();
+    let h = `<div class="cal-nav"><button class="icon-btn" id="calPrev" aria-label="Mois précédent">${ic('back')}</button><b>${MONTHS[cur.getMonth()]} ${cur.getFullYear()}</b><button class="icon-btn" id="calNext" aria-label="Mois suivant">${ic('chev')}</button></div>
+      <div class="cal"><span class="h">S</span>${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => `<span class="h">${d}</span>`).join('')}`;
+    for (let w = 0; w < 6; w++) {
+      const mon = addDays(first, w * 7);
+      if (w > 3 && mon.getMonth() !== cur.getMonth()) break;
+      h += `<span class="wn">${isoWeek(mon).week}</span>`;
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(mon, i), k = keyOf(d);
+        const cls = ['d', d.getMonth() !== cur.getMonth() ? 'out' : '', k === tk ? 'tdy' : '', k === selKey ? 'sel' : '', has.has(k) ? 'has' : ''].join(' ');
+        h += `<button type="button" class="${cls}" data-k="${k}" aria-label="${fmtLongY(d)}">${d.getDate()}</button>`;
+      }
+    }
+    $('#calBox', el).innerHTML = h + '</div>';
+    $('#calPrev', el).onclick = () => { cur = new Date(cur.getFullYear(), cur.getMonth() - 1, 1); draw(); };
+    $('#calNext', el).onclick = () => { cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1); draw(); };
+    $$('button.d', el).forEach(b => b.onclick = () => { closeSheet(); onPick(b.dataset.k); });
+  };
+  $('#calToday', el).onclick = () => { closeSheet(); onPick(todayKey()); };
+  draw();
+}
+
+/* ---------- Navigation ---------- */
+function parseRoute() {
+  const h = location.hash.replace(/^#\/?/, '');
+  const [path, qs] = h.split('?'); const parts = path.split('/');
+  const q = new URLSearchParams(qs || '');
+  if (parts[0] === 'jour' && /^\d{4}-\d{2}-\d{2}$/.test(parts[1] || '')) return { name: 'day', date: parts[1] };
+  if (parts[0] === 'cr' && parts[1] === 'nouveau') return { name: 'form', id: null, date: q.get('date') };
+  if (parts[0] === 'cr' && parts[1]) return { name: 'form', id: parts[1] };
+  if (parts[0] === 'reglages') return { name: 'settings' };
+  return { name: 'home' };
+}
+const go = h => { history.pushState({ inApp: true }, '', '#/' + h); route(); };
+const replaceTo = h => { history.replaceState({ inApp: !!(history.state && history.state.inApp) }, '', '#/' + h); route(); };
+const canGoBack = () => !!(history.state && history.state.inApp);
+function back(fallback) { if (canGoBack()) history.back(); else replaceTo(fallback); }
+window.addEventListener('popstate', () => route());
+function route() {
+  closeSheet(true); stopMic();
+  const r = parseRoute();
+  S.prevRoute = S.route; S.route = r;
+  window.scrollTo(0, 0);
+  if (r.name === 'day') { focusDay(r.date); renderHome(); }
+  else if (r.name === 'form') renderForm(r);
+  else if (r.name === 'settings') renderSettings();
+  else renderHome();
+}
+
+/* ---------- Accueil : semaines et jours ---------- */
+function sentBadge(key) {
+  const s = S.sent[key]; if (!s) return '';
+  const d = new Date(s.at);
+  return `<span class="sent">${ic('check')} ${s.how === 'gmail' ? 'Envoyé' : 'Partagé'} le ${pad(d.getDate())}/${pad(d.getMonth() + 1)} à ${pad(d.getHours())}h${pad(d.getMinutes())}</span>`;
+}
+function dayStatus(k, rs, open) {
+  if (!rs.length) return '';
+  const s = S.sent['day:' + k];
+  if (s) return `<span class="st st-ok">${ic('check')} ${s.how === 'gmail' ? 'Envoyé' : 'Partagé'}</span>`;
+  if (S.settings.sendMode === 'day' && k <= todayKey() && !open) return `<button type="button" class="dh-send" data-act="export-day" data-k="${k}">${ic('send')} Envoyer</button>`;
+  return '';
+}
+function itemRow(r, cm) {
+  const nPh = (r.photos || []).length;
+  const sub = [r.wo ? `<span class="wo">WO ${esc(r.wo)}</span>` : '', r.building ? esc(r.building) : '', r.wo ? `cumul ${fmtDur(cm[r.id])}` : '', nPh ? plural(nPh, 'photo', 'photos') : ''].filter(Boolean).join(' · ');
+  return `<button class="it" data-act="edit" data-id="${r.id}">
+    <span class="it-time">${esc(fmtRange(r.start, r.end))}</span>
+    <span class="it-main"><span class="it-title">${esc(r.request || r.comments || 'Intervention')}</span>${sub ? `<span class="it-sub">${sub}</span>` : ''}</span>
+    <span class="it-dur">${fmtDur(r.duration)}</span></button>`;
+}
+function dayBlock(d, cm) {
+  const k = keyOf(d), rs = reportsOn(k), open = S.openDays.has(k), isToday = k === todayKey();
+  const wos = [...new Set(rs.map(r => r.wo && r.wo.trim()).filter(Boolean))];
+  const meta = rs.length ? plural(rs.length, 'intervention', 'interventions') + (wos.length ? ' · WO ' + wos.join(', ') : '') : 'Rien de saisi';
+  return `<div class="day ${open ? 'open' : ''} ${rs.length ? '' : 'empty'}" id="day-${k}">
+    <div class="day-head" role="button" tabindex="0" data-act="toggle-day" data-k="${k}" aria-expanded="${open}">
+      <span class="dh-name"><b>${cap(DAYS[d.getDay()])} ${dnum(d)} ${MONTHS[d.getMonth()]}${isToday ? `<span class="today-pill">Aujourd'hui</span>` : ''}</b><small>${esc(meta)}</small></span>
+      <span class="dh-right">${rs.length ? `<b>${fmtDur(sumDur(rs))}</b>` : ''}${dayStatus(k, rs, open)}</span>
+      <span class="dh-chev">${ic('chev')}</span>
+    </div>
+    ${open ? `<div class="day-body">
+      ${rs.length ? `<div class="items">${rs.map(r => itemRow(r, cm)).join('')}</div>` : ''}
+      <button class="btn btn-primary btn-big" data-act="new" data-k="${k}">${ic('plus')} Créer nouveau compte rendu d'intervention</button>
+      ${rs.length ? `<button class="btn btn-secondary" data-act="export-day" data-k="${k}">${ic('send')} Envoyer la journée au n+1 (PDF)</button>` : ''}
+    </div>` : ''}
+  </div>`;
+}
+function weekCard(monKey, isCurrent, cm) {
+  const mon = fromKey(monKey), wk = isoWeek(mon), sun = keyOf(addDays(mon, 6));
+  const days = []; for (let i = 0; i < 7; i++) { const d = addDays(mon, i); if (i < 5 || reportsOn(keyOf(d)).length || keyOf(d) === todayKey()) days.push(d); }
+  const weekend = days.some(d => d.getDay() === 0 || d.getDay() === 6);
+  const rs = S.reports.filter(r => r.date >= monKey && r.date <= sun);
+  const open = isCurrent ? !S.openWeeks.has('!' + monKey) : S.openWeeks.has(monKey);
+  return `<section class="week ${isCurrent ? 'current' : ''}">
+    <button class="wk-head" data-act="toggle-week" data-k="${monKey}" data-cur="${isCurrent ? 1 : 0}" aria-expanded="${open}">
+      <span class="wk-no"><small>Sem.</small><b>${wk.week}</b></span>
+      <span class="wk-dates">${isCurrent ? '<small>Cette semaine</small>' : ''}<b>Semaine ${wk.week}</b><span>${weekLabel(mon, weekend)}</span></span>
+      <span class="wk-tot"><b>${fmtDur(sumDur(rs))}</b><span>${plural(rs.length, 'interv.', 'interv.')}</span></span>
+    </button>
+    ${open ? `<div class="wk-days">${days.map(d => dayBlock(d, cm)).join('')}</div>
+      <div class="wk-foot"><button class="btn ${S.settings.sendMode === 'week' && rs.length && !S.sent['week:' + monKey] ? 'btn-navy' : 'btn-secondary'}" data-act="export-week" data-k="${monKey}" ${rs.length ? '' : 'disabled'}>${ic('send')} Envoyer le reporting de la semaine</button>${sentBadge('week:' + monKey)}</div>` : ''}
+  </section>`;
+}
+function focusDay(k) {
+  const mon = keyOf(mondayOf(fromKey(k)));
+  S.extraWeeks.add(mon); S.openWeeks.add(mon); S.openWeeks.delete('!' + mon); S.openDays.clear(); S.openDays.add(k); S.focusDay = k;
+}
+function renderHome() {
+  const now = new Date(), curMon = keyOf(mondayOf(now)), cm = cumulMap();
+  const weeks = new Set([curMon, keyOf(addDays(mondayOf(now), -7)), keyOf(addDays(mondayOf(now), -14))]);
+  S.reports.forEach(r => weeks.add(keyOf(mondayOf(fromKey(r.date)))));
+  S.extraWeeks.forEach(w => weeks.add(w));
+  const list = [...weeks].sort().reverse();
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <div class="tb-title"><b>Reporting ${esc(S.settings.company || 'Cargill')}</b><small>${esc(S.settings.name || 'Comptes rendus')}</small></div>
+    <button class="icon-btn" data-act="go" data-h="reglages" aria-label="Réglages">${ic('sliders')}</button>
+  </div></header>
+  <main class="wrap">
+    ${PREVIEW ? `<div class="banner"><span><b>Aperçu de l'appli.</b> Les semaines 39 à 41 sont pré-remplies avec ton reporting actuel pour la démo. Tout ce que tu saisis ici reste dans ce navigateur. La dictée, le partage vers Gmail et la lecture des WO en photo ne marchent qu'une fois l'appli installée sur le téléphone.</span></div>` : ''}
+    ${!DB.db && !PREVIEW ? `<div class="banner"><b>Stockage indisponible sur ce navigateur.</b> Les comptes rendus seront perdus en fermant la page. Ouvre l'appli dans Safari ou Chrome (pas en navigation privée).</div>` : ''}
+    <div class="sec-head"><h2>Semaines</h2><button class="chip-btn" data-act="pick-date">${ic('cal')} Aller à une date</button></div>
+    ${list.map(m => weekCard(m, m === curMon, cm)).join('')}
+    <p class="small" style="text-align:center;margin:4px 0 0">Données enregistrées sur ce téléphone · pense à faire une sauvegarde de temps en temps (Réglages).</p>
+  </main>`;
+  if (S.focusDay) { const el = document.getElementById('day-' + S.focusDay); S.focusDay = null; if (el) el.scrollIntoView({ block: 'start' }); }
+}
+
+/* ---------- Formulaire de compte rendu ---------- */
+let F = null; // brouillon en cours
+const TIME_OPTS = (() => { const a = []; for (let m = 5 * 60; m <= 22 * 60; m += 15) a.push(fromMin(m)); return a; })();
+const DUR_OPTS = (() => { const a = []; for (let m = 15; m <= 12 * 60; m += 15) a.push(m); return a; })();
+const CUM_OPTS = (() => { const a = []; for (let m = 15; m <= 24 * 60; m += 15) a.push(m); for (let m = 24 * 60 + 30; m <= 60 * 60; m += 30) a.push(m); for (let m = 61 * 60; m <= 300 * 60; m += 60) a.push(m); return a; })();
+const timeOptions = sel => `<option value="">—</option>` + TIME_OPTS.map(t => `<option value="${t}" ${t === sel ? 'selected' : ''}>${fmtH(t)}</option>`).join('');
+function fillMinSelect(sel, opts, val, emptyLabel) {
+  const list = val != null && !opts.includes(val) ? [...opts, val].sort((a, b) => a - b) : opts;
+  sel.innerHTML = `<option value="">${emptyLabel}</option>` + list.map(m => `<option value="${m}">${fmtDur(m)}</option>`).join('');
+  sel.value = val == null ? '' : String(val);
+}
+
+async function renderForm(r) {
+  let rec = null;
+  if (r.id) { rec = S.reports.find(x => x.id === r.id); if (!rec) { toast("Ce compte rendu n'existe plus.", 'err'); replaceTo(''); return; } }
+  const date = rec ? rec.date : (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date) ? r.date : todayKey());
+  if (rec) {
+    F = { ...rec, photos: [...(rec.photos || [])], isNew: false, added: [], removed: [], woRead: null };
+  } else {
+    const prev = reportsOn(date); let lastEnd = prev.length ? prev[prev.length - 1].end : null;
+    if (lastEnd && toMin(lastEnd) >= toMin(S.settings.lunchStart) && toMin(lastEnd) < toMin(S.settings.lunchEnd)) lastEnd = S.settings.lunchEnd; // reprise après la pause
+    F = { id: uid(), isNew: true, date, start: lastEnd || S.settings.dayStart, end: '', wo: '', notif: '', building: '', location: '', equipment: '', request: '', comments: '', duration: null, durationManual: false, cumulManual: null, photos: [], woFile: null, createdAt: Date.now(), added: [], removed: [], woRead: null };
+  }
+  const draft = await DB.getKV('draft', null);
+  const offerDraft = draft && ((F.isNew && draft.isNew) || (!F.isNew && draft.id === F.id)) && draftHasContent(draft);
+  drawForm(offerDraft ? draft : null);
+}
+function draftHasContent(d) { return !!(d.wo || d.request || d.comments || (d.photos || []).length || d.woFile || d.building); }
+
+function drawForm(draft) {
+  const f = F, d = fromKey(f.date);
+  const lunch = `${fmtH(S.settings.lunchStart)}–${fmtH(S.settings.lunchEnd)}`;
+  const presets = [
+    { a: S.settings.dayStart, b: S.settings.dayEnd, l: 'Journée' },
+    { a: S.settings.dayStart, b: S.settings.lunchStart, l: 'Matin' },
+    { a: S.settings.lunchEnd, b: S.settings.dayEnd, l: 'Après-midi' }
+  ];
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <button class="icon-btn" data-act="form-cancel" aria-label="Annuler">${ic('x')}</button>
+    <div class="tb-title"><b>${f.isNew ? 'Nouveau compte rendu' : 'Compte rendu'}</b><small>Intervention · ${esc(S.settings.name)}</small></div>
+  </div></header>
+  <main class="wrap">
+    ${draft ? `<div class="banner" id="draftBanner"><span><b>Brouillon non enregistré</b> — ${esc(fmtShort(fromKey(draft.date)))}${draft.wo ? ' · WO ' + esc(draft.wo) : ''}${draft.request ? ' · ' + esc(draft.request.slice(0, 60)) : ''}</span>
+      <div class="btn-row"><button class="btn btn-primary" data-act="draft-resume">Reprendre le brouillon</button><button class="btn btn-secondary" data-act="draft-drop">Repartir de zéro</button></div></div>` : ''}
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('file')} Work order</h3>
+      <div class="wo-drop">
+        <p>Joins le WO (photo ou PDF) : le n°, le bâtiment et le travail demandé se remplissent tout seuls.</p>
+        <div class="btn-row">
+          <label class="btn btn-secondary">${ic('cam')} Photographier<input type="file" id="woCam" accept="image/*" capture="environment" hidden></label>
+          <label class="btn btn-secondary">${ic('file')} Fichier PDF<input type="file" id="woPick" accept="application/pdf,image/*" hidden></label>
+        </div>
+        ${PREVIEW && DEMO_WO_B64 ? `<button type="button" class="link" data-act="wo-demo" style="align-self:flex-start">Essayer avec un WO d'exemple (PDF)</button>` : ''}
+        <div id="woStatus"></div>
+      </div>
+    </section>
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('cal')} Quand</h3>
+      <div class="field"><span class="lbl">Date</span>
+        <button type="button" class="date-btn" data-act="form-date">${ic('cal')}<span><b id="fDateTxt">${cap(fmtLongY(d))}</b><small id="fDateWk">Semaine ${isoWeek(d).week}</small></span></button></div>
+      <div class="field"><span class="lbl">Horaires</span>
+        <div class="row2">
+          <div class="field"><label for="fStart" class="hint">Début</label><select class="inp mono" id="fStart">${timeOptions(f.start)}</select></div>
+          <div class="field"><label for="fEnd" class="hint">Fin</label><select class="inp mono" id="fEnd">${timeOptions(f.end)}</select></div>
+        </div>
+        <div class="chips" id="presets">${presets.map((p, i) => `<button type="button" class="chip" data-act="preset" data-i="${i}" data-a="${p.a}" data-b="${p.b}"><span>${p.l}</span> ${fmtH(p.a)}–${fmtH(p.b)}</button>`).join('')}</div>
+        <span class="hint">Pause ${lunch} déduite automatiquement.</span>
+      </div>
+    </section>
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('send')} Intervention</h3>
+      <div class="row2">
+        <div class="field"><label for="fWo">N° work order <span class="read-tag" id="rt-wo" hidden>${ic('check')}lu sur le WO</span></label><input class="inp mono" id="fWo" inputmode="numeric" autocomplete="off" placeholder="418319320" value="${esc(f.wo)}"></div>
+        <div class="field"><label for="fBuilding">Bâtiment <span class="read-tag" id="rt-building" hidden>${ic('check')}lu</span></label><input class="inp" id="fBuilding" autocomplete="off" placeholder="Bât. 27" value="${esc(f.building)}"></div>
+      </div>
+      <div id="woHist"></div>
+      <div class="field"><label for="fRequest">Travail demandé <span class="read-tag" id="rt-request" hidden>${ic('check')}lu sur le WO</span></label><textarea class="inp" id="fRequest" rows="2" placeholder="Ce que demande le WO : ex. réparation mortier poteau et sous-face de poutre">${esc(f.request)}</textarea></div>
+      <div class="field"><label for="fComments">Commentaires</label>
+        <div class="mic-wrap"><textarea class="inp" id="fComments" rows="3" placeholder="Ce que tu as fait, constaté, ce qui reste à faire… Touche le micro pour dicter.">${esc(f.comments)}</textarea>
+        <button type="button" class="mic" id="micBtn" data-act="mic" aria-label="Dicter les commentaires">${ic('mic')}</button></div>
+        <span class="mic-state" id="micState" hidden>J'écoute… touche le carré pour arrêter.</span>
+      </div>
+      <details class="more" id="moreBox" ${(f.notif || f.location || f.equipment) ? 'open' : ''}><summary>N° d'avis, localisation, équipement</summary>
+        <div class="field"><label for="fNotif">N° d'avis / notification <span class="read-tag" id="rt-notif" hidden>${ic('check')}lu</span></label><input class="inp mono" id="fNotif" inputmode="numeric" autocomplete="off" value="${esc(f.notif)}"></div>
+        <div class="field"><label for="fLocation">Localisation / poste technique <span class="read-tag" id="rt-location" hidden>${ic('check')}lu</span></label><input class="inp" id="fLocation" autocomplete="off" value="${esc(f.location)}"></div>
+        <div class="field"><label for="fEquipment">Équipement <span class="read-tag" id="rt-equipment" hidden>${ic('check')}lu</span></label><input class="inp" id="fEquipment" autocomplete="off" value="${esc(f.equipment)}"></div>
+      </details>
+    </section>
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('cal')} Temps</h3>
+      <div class="row2">
+        <div class="field"><label for="fDuration">Temps passé</label><select class="inp mono" id="fDuration"></select></div>
+        <div class="field"><label for="fCumul">Cumul sur ce WO</label><select class="inp mono" id="fCumul"></select></div>
+      </div>
+      <span class="hint" id="durHint"></span>
+      <span class="hint" id="cumHint"></span>
+    </section>
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('cam')} Photos</h3>
+      <div class="photos" id="photoGrid"></div>
+    </section>
+
+    ${f.isNew ? '' : `<div class="danger-zone"><button class="btn btn-danger" data-act="form-delete">${ic('trash')} Supprimer ce compte rendu</button></div>`}
+  </main>
+  <footer class="actionbar"><div class="ab-err" id="formErr" hidden></div><div class="actionbar-in">
+    <button class="btn btn-secondary" data-act="form-save-next">${ic('plus')} Enregistrer + nouveau</button>
+    <button class="btn btn-primary" data-act="form-save">${ic('check')} Enregistrer</button>
+  </div></footer>`;
+  bindForm();
+  refreshCalc(); renderPhotos(); renderWoStatus(f.woFile ? 'attached' : 'none');
+  markPresets();
+}
+
+function bindForm() {
+  const f = F;
+  const txt = { fWo: 'wo', fBuilding: 'building', fRequest: 'request', fComments: 'comments', fNotif: 'notif', fLocation: 'location', fEquipment: 'equipment' };
+  for (const id in txt) {
+    const el = $('#' + id);
+    el.addEventListener('input', () => {
+      f[txt[id]] = el.value;
+      if (id === 'fWo') debounce('wo', refreshCalc, 250);
+      const rt = $('#rt-' + txt[id]); if (rt) rt.hidden = true;
+      scheduleDraft();
+    });
+  }
+  $('#fStart').onchange = e => { f.start = e.target.value; refreshCalc(); markPresets(); scheduleDraft(); };
+  $('#fEnd').onchange = e => { f.end = e.target.value; refreshCalc(); markPresets(); scheduleDraft(); };
+  $('#fDuration').onchange = e => { f.duration = e.target.value === '' ? null : Number(e.target.value); f.durationManual = true; refreshCalc(); scheduleDraft(); };
+  $('#fCumul').onchange = e => {
+    const v = e.target.value === '' ? null : Number(e.target.value);
+    const h = woHistory(f.wo, f); const auto = (h ? h.prev : 0) + (f.duration || 0);
+    f.cumulManual = v === auto ? null : v; refreshCalc(); scheduleDraft();
+  };
+  $('#woCam').onchange = e => { const file = e.target.files[0]; e.target.value = ''; onWoFile(file); };
+  $('#woPick').onchange = e => { const file = e.target.files[0]; e.target.value = ''; onWoFile(file); };
+}
+function markPresets() { $$('#presets .chip').forEach(c => c.classList.toggle('on', c.dataset.a === F.start && c.dataset.b === F.end)); }
+
+function refreshCalc() {
+  const f = F; if (!f || !$('#fDuration')) return;
+  if (!f.durationManual) f.duration = autoDuration(f.start, f.end);
+  fillMinSelect($('#fDuration'), DUR_OPTS, f.duration, '—');
+  const dh = $('#durHint');
+  if (f.durationManual) dh.innerHTML = `Temps saisi à la main. <button type="button" class="link" data-act="dur-auto">Recalculer d'après les horaires</button>`;
+  else if (f.duration != null) dh.textContent = `Calculé d'après ${fmtRange(f.start, f.end)}${lunchOverlap(f.start, f.end) ? ', pause déduite' : ''}. Tu peux le changer.`;
+  else if (f.start && f.end) dh.textContent = "L'heure de fin doit être après le début.";
+  else dh.textContent = 'Choisis la fin de l\'intervention, ou le temps passé directement.';
+
+  const hist = woHistory(f.wo, f), cs = $('#fCumul'), ch = $('#cumHint'), wh = $('#woHist');
+  if (!hist) {
+    cs.disabled = true; fillMinSelect(cs, CUM_OPTS, null, '—');
+    ch.textContent = 'Le cumul se calcule dès que tu indiques le n° de WO.'; wh.innerHTML = ''; return;
+  }
+  cs.disabled = false;
+  const auto = hist.prev + (f.duration || 0);
+  const val = f.cumulManual != null ? f.cumulManual : auto;
+  fillMinSelect(cs, CUM_OPTS, val || null, '—');
+  if (f.cumulManual != null) ch.innerHTML = `Cumul modifié à la main (calcul auto : ${fmtDur(auto)}). <button type="button" class="link" data-act="cum-auto">Revenir au calcul auto</button>`;
+  else if (hist.before.length) ch.textContent = `${fmtDur(hist.prev)} déjà passées sur ce WO (${plural(hist.before.length, 'intervention', 'interventions')}) + ${fmtDur(f.duration || 0)} ici. Si tu y étais allé avant d'utiliser l'appli, corrige le cumul.`;
+  else ch.textContent = 'Premier passage enregistré sur ce WO. Si tu y étais déjà intervenu avant, choisis le vrai cumul.';
+  if (hist.all.length) {
+    const last = hist.all[hist.all.length - 1];
+    const canFill = (!f.building && last.building) || (!f.request && last.request) || (!f.location && last.location) || (!f.equipment && last.equipment);
+    wh.innerHTML = `<div class="hist"><span><b>WO déjà suivi</b> · ${plural(hist.all.length, 'compte rendu', 'comptes rendus')}, dernier le ${fmtShort(fromKey(last.date))}${last.request ? ' : ' + esc(last.request.slice(0, 70)) : ''}</span>${canFill ? `<button type="button" class="link" data-act="wo-reuse" style="align-self:flex-start">Reprendre bâtiment et description</button>` : ''}</div>`;
+  } else wh.innerHTML = '';
+}
+
+async function renderPhotos() {
+  const g = $('#photoGrid'); if (!g) return;
+  const items = await Promise.all(F.photos.map(async id => ({ id, url: await fileURL(id) })));
+  g.innerHTML = items.filter(x => x.url).map(x => `<div class="ph"><img src="${x.url}" alt="Photo d'intervention"><button type="button" class="rm" data-act="ph-rm" data-id="${x.id}" aria-label="Retirer la photo">${ic('x')}</button></div>`).join('') +
+    `<label class="ph-add">${ic('cam')}Prendre une photo<input type="file" accept="image/*" capture="environment" hidden data-ph="1"></label>
+     <label class="ph-add">${ic('img')}Depuis la galerie<input type="file" accept="image/*" multiple hidden data-ph="1"></label>`;
+  $$('input[data-ph]', g).forEach(inp => inp.onchange = e => { const files = [...e.target.files]; e.target.value = ''; addPhotos(files); });
+}
+
+/* Images */
+async function decodeImage(blob) {
+  if ('createImageBitmap' in window) { try { return await createImageBitmap(blob, { imageOrientation: 'from-image' }); } catch (e) { } }
+  return await new Promise((res, rej) => { const u = URL.createObjectURL(blob); const im = new Image(); im.onload = () => { URL.revokeObjectURL(u); res(im); }; im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('image')); }; im.src = u; });
+}
+async function drawScaled(blob, max) {
+  const im = await decodeImage(blob); const w = im.width || im.naturalWidth, h = im.height || im.naturalHeight;
+  const s = Math.min(1, max / Math.max(w, h)); const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(w * s)); c.height = Math.max(1, Math.round(h * s));
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(im, 0, 0, c.width, c.height); if (im.close) im.close();
+  return c;
+}
+async function resizeToBlob(blob, max, q) { const c = await drawScaled(blob, max); return await new Promise(r => c.toBlob(b => r(b || blob), 'image/jpeg', q)); }
+async function resizeToData(blob, max, q) { const c = await drawScaled(blob, max); return { data: c.toDataURL('image/jpeg', q), w: c.width, h: c.height }; }
+
+async function addPhotos(files) {
+  let n = 0;
+  for (const file of files) {
+    if (file.type && !file.type.startsWith('image/')) continue;
+    let blob = file; try { blob = await resizeToBlob(file, 1600, 0.8); } catch (e) { }
+    const id = uid(); await DB.put('files', { id, kind: 'photo', type: blob.type || 'image/jpeg', name: file.name || 'photo.jpg', blob, createdAt: Date.now() });
+    F.photos.push(id); F.added.push(id); n++;
+  }
+  if (n) { renderPhotos(); scheduleDraft(); }
+  else if (files.length) toast("Ce fichier n'est pas une image lisible.", 'err');
+}
+
+/* Brouillon auto (si le téléphone se met en veille en cours de saisie) */
+function scheduleDraft() { debounce('draft', () => { if (F) DB.setKV('draft', { ...F, savedAt: Date.now() }); }, 500); }
+async function clearDraft() { clearTimeout(debTimers.draft); await DB.del('kv', 'draft'); }
+
+/* ---------- Work order : lecture automatique ---------- */
+const scriptLoads = {};
+function loadScript(src) {
+  if (scriptLoads[src]) return scriptLoads[src];
+  scriptLoads[src] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.async = true;
+    s.onload = () => res(); s.onerror = () => { delete scriptLoads[src]; rej(new Error('Chargement impossible : ' + src)); };
+    document.head.appendChild(s);
+  });
+  return scriptLoads[src];
+}
+function renderWoStatus(state, p) {
+  const box = $('#woStatus'); if (!box) return;
+  const f = F;
+  const live = $('.loading', box);
+  if (state === 'reading' && live && p) { live.firstElementChild.textContent = p.label || 'Lecture du work order…'; const bar = $('.progress', live); if (p.v != null) { bar.classList.remove('indet'); bar.firstElementChild.style.width = Math.round(p.v * 100) + '%'; } return; }
+  const chip = async () => {
+    if (!f.woFile) return '';
+    const rec = await DB.get('files', f.woFile); if (!rec) return '';
+    return `<div class="file-chip">${ic('file')}<span class="fc-name">${esc(rec.name)}<small>${rec.type === 'application/pdf' ? 'PDF' : 'Photo'} · ${Math.max(1, Math.round(rec.blob.size / 1024))} Ko</small></span><button type="button" data-act="wo-view">Voir</button><button type="button" data-act="wo-remove">Retirer</button></div>`;
+  };
+  (async () => {
+    let h = await chip();
+    if (state === 'reading') {
+      h += `<div class="loading"><span>${p && p.label ? esc(p.label) : 'Lecture du work order…'}</span><div class="progress ${p && p.v != null ? '' : 'indet'}"><i style="${p && p.v != null ? `width:${Math.round(p.v * 100)}%` : ''}"></i></div></div>`;
+    } else if (state === 'done' && f.woRead) {
+      const L = { wo: 'N° WO', notif: "N° d'avis", building: 'Bâtiment', location: 'Localisation', equipment: 'Équipement', request: 'Travail demandé' };
+      const { filled, conflicts, extra } = f.woRead;
+      h += `<div class="found">`;
+      if (filled.length) h += `<span class="ok">${ic('check')} ${plural(filled.length, 'info remplie', 'infos remplies')} : ${filled.map(k => L[k]).join(', ')}. Vérifie d'un coup d'œil.</span>`;
+      else if (!conflicts.length) h += `<span>Je n'ai rien pu lire de fiable sur ce document. Le WO reste joint ; remplis les champs à la main.</span>`;
+      for (const c of conflicts) h += `<div class="conflict"><span>${L[c.k]} sur le WO : <b>${esc(c.v)}</b></span><button type="button" class="link" data-act="wo-use" data-k="${c.k}">Utiliser</button></div>`;
+      if (extra && (extra.priority || extra.requester)) h += `<span class="hint">${extra.priority ? 'Priorité : ' + esc(extra.priority) : ''}${extra.priority && extra.requester ? ' · ' : ''}${extra.requester ? 'Demandeur : ' + esc(extra.requester) : ''}</span>`;
+      h += `</div>`;
+    } else if (state === 'error') {
+      h += `<span class="hint">Lecture impossible (pas de réseau ?). Le WO reste joint ; remplis les champs à la main ou réessaie plus tard. <button type="button" class="link" data-act="wo-reread">Réessayer</button></span>`;
+    } else if (state === 'attached') {
+      h += `<button type="button" class="link" data-act="wo-reread" style="align-self:flex-start">Relire les infos du WO</button>`;
+    }
+    box.innerHTML = h;
+  })();
+}
+
+async function onWoFile(file) {
+  if (!file) return;
+  const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+  if (!isPdf && file.type && !file.type.startsWith('image/')) { toast('Choisis une photo ou un PDF du work order.', 'err'); return; }
+  let blob = file;
+  if (!isPdf) { try { blob = await resizeToBlob(file, 2400, 0.86); } catch (e) { } }
+  const id = uid();
+  await DB.put('files', { id, kind: 'wo', type: isPdf ? 'application/pdf' : (blob.type || 'image/jpeg'), name: file.name || (isPdf ? 'work-order.pdf' : 'work-order.jpg'), blob, createdAt: Date.now() });
+  if (F.woFile) { if (F.added.includes(F.woFile)) DB.del('files', F.woFile); else F.removed.push(F.woFile); }
+  F.woFile = id; F.added.push(id); scheduleDraft();
+  await readWo();
+}
+async function readWo() {
+  const f = F; if (!f.woFile) return;
+  const rec = await DB.get('files', f.woFile); if (!rec) return;
+  renderWoStatus('reading', { label: 'Lecture du work order…' });
+  try {
+    let text = '';
+    if (rec.type === 'application/pdf') {
+      text = await pdfText(rec.blob);
+      if (text.replace(/\s/g, '').length < 40) { const img = await pdfFirstPage(rec.blob); text = await ocr(img); }
+    } else text = await ocr(rec.blob);
+    if (F !== f) return;
+    applyFound(parseWO(text));
+    renderWoStatus('done');
+  } catch (e) { console.error(e); if (F === f) renderWoStatus('error'); }
+}
+async function ensurePdfjs() {
+  await loadScript(LIBS.pdfjs);
+  if (PREVIEW) await loadScript(LIBS.pdfjsWorker);
+  const lib = window.pdfjsLib; lib.GlobalWorkerOptions.workerSrc = LIBS.pdfjsWorker; return lib;
+}
+async function pdfText(blob) {
+  const lib = await ensurePdfjs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
+  const out = [];
+  for (let p = 1; p <= Math.min(pdf.numPages, 3); p++) {
+    const page = await pdf.getPage(p); const tc = await page.getTextContent(); const rows = [];
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      const y = it.transform[5], x = it.transform[4];
+      let row = rows.find(r => Math.abs(r.y - y) < 3); if (!row) { row = { y, items: [] }; rows.push(row); }
+      row.items.push({ x, s: it.str });
+    }
+    rows.sort((a, b) => b.y - a.y);
+    for (const r of rows) out.push(r.items.sort((a, b) => a.x - b.x).map(i => i.s).join(' ').replace(/\s+/g, ' ').trim());
+  }
+  return out.join('\n');
+}
+async function pdfFirstPage(blob) {
+  const lib = await ensurePdfjs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
+  const page = await pdf.getPage(1); const vp = page.getViewport({ scale: 2.2 });
+  const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+  await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+  return await new Promise(r => c.toBlob(r, 'image/png'));
+}
+async function ocr(blob) {
+  renderWoStatus('reading', { label: 'Préparation de la lecture…' });
+  await loadScript(LIBS.tesseract);
+  const worker = await Tesseract.createWorker('fra', 1, {
+    logger: m => { if (m.status === 'recognizing text') renderWoStatus('reading', { label: 'Lecture du texte du WO…', v: m.progress }); }
+  });
+  try { const { data } = await worker.recognize(blob); return data.text || ''; } finally { worker.terminate(); }
+}
+function parseWO(raw) {
+  const text = String(raw || '').replace(/\r/g, '').replace(/[ \t]+/g, ' ');
+  const lines = text.split('\n').map(s => s.trim()).filter(Boolean);
+  const out = {};
+  let m = text.match(/(?:ordre(?:\s+de\s+travail)?|work\s*order|\bW\.?\s?O\b\.?|\bO\.?T\b\.?|bon\s+de\s+travail)\s*(?:n[°ºo]\.?|no\.?|num[ée]ro|#)?\s*[:\-]?\s*(\d{6,12})/i);
+  if (!m) m = text.match(/\b(4\d{8})\b/);
+  if (m) out.wo = m[1];
+  m = text.match(/(?:avis|notification|notif\.?)\s*(?:n[°ºo]\.?|no\.?|#)?\s*[:\-]?\s*(\d{6,12})/i);
+  if (m && m[1] !== out.wo) out.notif = m[1];
+  m = text.match(/\b(?:b[âa]t(?:iment)?|bldg|building)\b\.?\s*(?:n[°ºo]\.?)?\s*[:\-]?\s*([A-Z]?\d{1,4}[A-Z]?)\b/i);
+  if (m) out.building = 'Bât. ' + m[1].toUpperCase();
+  const label = re => {
+    for (let i = 0; i < lines.length; i++) {
+      const mm = lines[i].match(re);
+      if (mm) { let v = (mm[1] || '').replace(/^[\s:\-–]+/, '').trim(); if (!v && lines[i + 1]) v = lines[i + 1]; if (v) return v.slice(0, 240); }
+    }
+    return '';
+  };
+  const W = '(?:^|\\s)';
+  out.request = label(new RegExp(W + '(?:description(?:\\s+de\\s+l\'ordre)?|d[ée]signation|texte\\s+court|short\\s+text|objet|travail\\s+(?:[àa]\\s+r[ée]aliser|demand[ée])|travaux\\s+(?:demand[ée]s|[àa]\\s+r[ée]aliser)|libell[ée]|intitul[ée])\\s*[:\\-]?\\s*(.*)$', 'i'));
+  out.location = label(new RegExp(W + '(?:poste\\s+technique|functional\\s+location|localisation|emplacement|lieu\\s+d\'intervention)\\s*[:\\-]?\\s*(.*)$', 'i'));
+  out.equipment = label(new RegExp(W + '(?:[ée]quipement|equipment)\\s*[:\\-]?\\s*(.*)$', 'i'));
+  const priority = label(/(?:^|\s)(?:priorit[ée]|priority)\s*[:\-]?\s*(.*)$/i);
+  const requester = label(/(?:^|\s)(?:demandeur|requested\s+by|[ée]metteur|cr[ée][ée]\s+par)\s*[:\-]?\s*(.*)$/i);
+  if (!out.building) { const b = (out.location + ' ' + out.request).match(/b[âa]t(?:iment)?\.?\s*([A-Z]?\d{1,4}[A-Z]?)\b/i); if (b) out.building = 'Bât. ' + b[1].toUpperCase(); }
+  for (const k of ['request', 'location', 'equipment']) if (out[k]) out[k] = out[k].replace(/\s{2,}/g, ' ').replace(/^[^\wÀ-ÿ]+/, '').trim();
+  for (const k in out) if (!out[k]) delete out[k];
+  out._extra = { priority: priority.slice(0, 40), requester: requester.slice(0, 60) };
+  return out;
+}
+const MAP_FIELDS = { wo: 'fWo', notif: 'fNotif', building: 'fBuilding', location: 'fLocation', equipment: 'fEquipment', request: 'fRequest' };
+const sameText = (a, b) => normWO(a) === normWO(b) || String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+function applyFound(found) {
+  const f = F, filled = [], conflicts = [];
+  for (const k in MAP_FIELDS) {
+    const v = found[k]; if (!v) continue;
+    const cur = (f[k] || '').trim();
+    if (!cur) { f[k] = v; const el = $('#' + MAP_FIELDS[k]); if (el) el.value = v; const rt = $('#rt-' + k); if (rt) rt.hidden = false; filled.push(k); }
+    else if (!sameText(cur, v)) conflicts.push({ k, v });
+  }
+  if (filled.some(k => ['notif', 'location', 'equipment'].includes(k))) $('#moreBox')?.setAttribute('open', '');
+  f.woRead = { filled, conflicts, extra: found._extra };
+  refreshCalc(); scheduleDraft();
+}
+
+/* ---------- Micro / dictée ---------- */
+let REC = null;
+function setMicUI(on) { const b = $('#micBtn'); if (!b) return; b.classList.toggle('on', on); b.innerHTML = ic(on ? 'stop' : 'mic'); b.setAttribute('aria-label', on ? 'Arrêter la dictée' : 'Dicter les commentaires'); const s = $('#micState'); if (s) s.hidden = !on; }
+function stopMic() { if (REC) { try { REC.stop(); } catch (e) { } } }
+function toggleMic() {
+  if (REC) { stopMic(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const ta = $('#fComments');
+  if (!SR) { toast('Dictée directe pas dispo ici : touche le micro de ton clavier pour dicter.'); ta.focus(); return; }
+  const rec = new SR(); REC = rec;
+  rec.lang = 'fr-FR'; rec.interimResults = true; rec.continuous = !/Android/i.test(navigator.userAgent);
+  const base = ta.value.replace(/\s+$/, ''); let finals = '';
+  rec.onresult = e => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) { const t = e.results[i][0].transcript; if (e.results[i].isFinal) finals = (finals + ' ' + t.trim()).trim(); else interim += t; }
+    let add = (finals + ' ' + interim).trim(); if (add && !base) add = add.charAt(0).toUpperCase() + add.slice(1);
+    ta.value = base ? (add ? base + ' ' + add : base) : add; F.comments = ta.value;
+  };
+  rec.onerror = e => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast('Micro refusé : autorise le micro pour cette appli, ou dicte avec le micro du clavier.', 'err');
+    else if (e.error === 'no-speech') toast("Je n'ai rien entendu, réessaie.");
+    else if (e.error !== 'aborted') toast('Dictée interrompue (' + e.error + ').', 'err');
+  };
+  rec.onend = () => { if (REC === rec) REC = null; setMicUI(false); if (F) { F.comments = ta.value; scheduleDraft(); } };
+  try { rec.start(); setMicUI(true); } catch (e) { REC = null; toast('Impossible de lancer la dictée : utilise le micro du clavier.', 'err'); }
+}
+
+/* ---------- Enregistrer / annuler ---------- */
+async function saveForm(next = false) {
+  const f = F, err = $('#formErr');
+  stopMic();
+  f.comments = $('#fComments').value;
+  const problems = [];
+  if (f.start && f.end && toMin(f.end) <= toMin(f.start)) problems.push("L'heure de fin doit être après le début.");
+  if (!f.request.trim() && !f.comments.trim() && !normWO(f.wo)) problems.push('Indique au moins le travail réalisé ou un n° de WO.');
+  if (problems.length) { err.textContent = problems.join(' '); err.hidden = false; toast(problems[0], 'err'); return; }
+  err.hidden = true;
+  const rec = {
+    id: f.id, date: f.date, start: f.start || '', end: f.end || '', wo: f.wo.trim(), notif: f.notif.trim(), building: f.building.trim(), location: f.location.trim(), equipment: f.equipment.trim(),
+    request: f.request.trim(), comments: f.comments.trim(), duration: f.duration, durationManual: !!f.durationManual, cumulManual: f.cumulManual,
+    photos: f.photos, woFile: f.woFile, createdAt: f.createdAt || Date.now(), updatedAt: Date.now()
+  };
+  await DB.put('reports', rec);
+  const i = S.reports.findIndex(x => x.id === rec.id); if (i >= 0) S.reports[i] = rec; else S.reports.push(rec);
+  for (const id of f.removed) { await DB.del('files', id); urlCache.delete(id); }
+  await clearDraft(); F = null;
+  if (next) {
+    toast(`Enregistré. Intervention suivante du ${fmtShort(fromKey(rec.date))}`);
+    replaceTo('cr/nouveau?date=' + rec.date); return;
+  }
+  toast('Compte rendu enregistré');
+  focusDay(rec.date);
+  if (canGoBack()) history.back(); else replaceTo('');
+}
+async function cancelForm() {
+  const f = F; stopMic();
+  const dirty = f && (f.isNew ? draftHasContent(f) : true);
+  if (f && f.isNew && dirty) { const ok = await confirmSheet({ title: 'Abandonner ce compte rendu ?', text: 'Ce que tu as saisi sera effacé.', ok: 'Abandonner', danger: true }); if (!ok) return; }
+  if (f) for (const id of f.added) await DB.del('files', id);
+  await clearDraft(); F = null;
+  if (f && f.date) focusDay(f.date);
+  back('');
+}
+async function deleteReport() {
+  const f = F;
+  const ok = await confirmSheet({ title: 'Supprimer ce compte rendu ?', text: 'Les photos et le WO joints seront aussi supprimés. Impossible de revenir en arrière.', ok: 'Supprimer', danger: true });
+  if (!ok) return;
+  const rec = S.reports.find(x => x.id === f.id);
+  const files = new Set([...(rec?.photos || []), rec?.woFile, ...f.added].filter(Boolean));
+  for (const id of files) { await DB.del('files', id); urlCache.delete(id); }
+  await DB.del('reports', f.id); S.reports = S.reports.filter(x => x.id !== f.id);
+  await clearDraft(); F = null; toast('Compte rendu supprimé');
+  focusDay(f.date);
+  if (canGoBack()) history.back(); else replaceTo('');
+}
+
+/* ---------- PDF ---------- */
+function pdfSafe(s) {
+  return String(s ?? '').replace(/[\u2028\u2029]/g, '\n').replace(/[\u00A0\u202F]/g, ' ').replace(/[\u2018\u2019\u02BC]/g, "'").replace(/[\u201C\u201D]/g, '"')
+    .replace(/[^\n\x20-\x7E\u00A0-\u00FF\u0152\u0153\u0160\u0161\u0178\u017D\u017E\u2013\u2014\u2020\u2021\u2022\u2026\u2030\u20AC\u2122]/g, '');
+}
+function exportCtx(scope, key) {
+  const st = S.settings;
+  let days = [];
+  if (scope === 'day') days = [{ d: fromKey(key), k: key, rs: reportsOn(key) }];
+  else { const mon = fromKey(key); for (let i = 0; i < 7; i++) { const d = addDays(mon, i), k = keyOf(d), rs = reportsOn(k); if (i < 5 || rs.length) days.push({ d, k, rs }); } }
+  const all = days.flatMap(x => x.rs), total = sumDur(all), d0 = days[0].d, wk = isoWeek(d0).week;
+  const weekend = days.some(x => x.d.getDay() === 0 || x.d.getDay() === 6);
+  const who = st.name || 'Dimitri Van Calster', co = st.company || 'Cargill';
+  const fileDate = scope === 'day' ? key : `S${pad(wk)}-${d0.getFullYear()}`;
+  const filename = `${scope === 'day' ? 'CR' : 'Reporting'}_${co}_${fileDate}_${who}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9_-]+/g, '_') + '.pdf';
+  const heading = scope === 'day' ? `Compte rendu du ${fmtLong(d0)}` : `Reporting semaine ${wk}`;
+  const subject = scope === 'day'
+    ? `Compte rendu d'intervention – ${cap(fmtLongY(d0))} (S${wk}) – ${who}`
+    : `Reporting ${co} – Semaine ${wk} (${weekLabel(d0, weekend)}) – ${who}`;
+  const hello = st.managerName ? `Bonjour ${st.managerName.split(' ')[0]},` : 'Bonjour,';
+  const cm = cumulMap();
+  const lines = all.map(r => `• ${scope === 'week' ? fmtShort(fromKey(r.date)) + ' · ' : ''}${fmtRange(r.start, r.end)}${r.wo ? ' · WO ' + r.wo : ''}${r.building ? ' · ' + r.building : ''} · ${(r.request || r.comments || 'Intervention').replace(/\s+/g, ' ').slice(0, 90)} (${fmtDur(r.duration)}${r.wo ? ', cumul WO ' + fmtDur(cm[r.id]) : ''})`);
+  const body = `${hello}\n\nCi-joint mon ${scope === 'day' ? `compte rendu d'intervention du ${fmtLongY(d0)}` : `reporting de la semaine ${wk}, ${weekLabel(d0, weekend)}`}.\n\n${lines.join('\n')}\n\nTotal ${scope === 'day' ? 'de la journée' : 'de la semaine'} : ${fmtDur(total)}.\n\nCordialement,\n${who}`;
+  return { scope, key, days, all, total, wk, d0, weekend, filename, heading, subject, body };
+}
+async function buildPDF(ctx) {
+  await loadScript(LIBS.jspdf); await loadScript(LIBS.autotable);
+  const { jsPDF } = window.jspdf; const st = S.settings;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const W = 297, H = 210, M = 12, NAVY = [29, 53, 87], SOFT = [220, 229, 240], INK = [19, 32, 48], MUT = [93, 109, 126];
+  const co = (st.company || 'Cargill').toUpperCase(), who = st.name || 'Dimitri Van Calster';
+  const title = ctx.scope === 'day' ? `COMPTE RENDU D'INTERVENTION — ${fmtLongY(ctx.d0).toUpperCase()}` : `REPORTING ${co} — SEMAINE N° ${ctx.wk}`;
+  const period = ctx.scope === 'day' ? `${cap(fmtLongY(ctx.d0))} · semaine ${ctx.wk}` : `Période suivie : ${weekLabel(ctx.d0, ctx.weekend)}`;
+  const sub = `Intervenant : ${who}${st.site ? ' · Site : ' + st.site : ''} · ${period} · journée habituelle ${fmtH(st.dayStart)}–${fmtH(st.dayEnd)}, pause ${fmtH(st.lunchStart)}–${fmtH(st.lunchEnd)}`;
+  const band = (small) => {
+    doc.setFillColor(...NAVY); doc.rect(0, 0, W, small ? 14 : 22, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(small ? 11 : 15.5);
+    doc.text(pdfSafe(title), M, small ? 9 : 11.5);
+    if (!small) { doc.setFont('helvetica', 'normal'); doc.setFontSize(8.6); doc.text(pdfSafe(sub), M, 17.5, { maxWidth: W - 2 * M }); }
+    doc.setFillColor(242, 169, 0); doc.rect(0, small ? 14 : 22, W, 1.1, 'F');
+  };
+  band(false);
+  const cm = cumulMap();
+  const wos = [...new Set(ctx.all.map(r => r.wo).filter(Boolean))];
+  doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+  doc.text(pdfSafe(`Total : ${fmtDec(ctx.total)} h`), M, 31);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...MUT);
+  doc.text(pdfSafe(`${plural(ctx.all.length, 'intervention', 'interventions')}${wos.length ? ` · ${plural(wos.length, 'WO', 'WO')} : ${wos.join(', ')}` : ''}`), M + 32, 31, { maxWidth: W - 2 * M - 32 });
+
+  const body = []; const sty = { fillColor: SOFT, fontStyle: 'bold', textColor: INK };
+  for (const day of ctx.days) {
+    const dl = `${fmtShort(day.d)}/${day.d.getFullYear()}`;
+    if (!day.rs.length) { body.push([{ content: pdfSafe(dl), styles: { textColor: MUT } }, { content: 'Aucune intervention saisie', colSpan: 8, styles: { textColor: MUT, fontStyle: 'italic' } }]); continue; }
+    day.rs.forEach((r, i) => {
+      const nPh = (r.photos || []).length;
+      body.push([
+        i === 0 ? pdfSafe(dl) : '',
+        pdfSafe(fmtRange(r.start, r.end)),
+        pdfSafe([r.wo ? 'WO ' + r.wo : '', r.notif ? 'Avis ' + r.notif : ''].filter(Boolean).join('\n')),
+        pdfSafe([r.building, r.location].filter(Boolean).join('\n')),
+        pdfSafe([r.request, r.equipment ? 'Équipement : ' + r.equipment : ''].filter(Boolean).join('\n')),
+        pdfSafe(r.comments),
+        fmtDec(r.duration),
+        r.wo ? fmtDec(cm[r.id]) : '',
+        nPh ? String(nPh) : ''
+      ]);
+    });
+    body.push([{ content: 'TOTAL JOUR (h)', colSpan: 6, styles: { ...sty, halign: 'right' } }, { content: fmtDec(sumDur(day.rs)), styles: { ...sty, halign: 'right' } }, { content: '', colSpan: 2, styles: sty }]);
+  }
+  if (ctx.scope === 'week') body.push([{ content: 'TOTAL SEMAINE (h)', colSpan: 6, styles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold', halign: 'right' } }, { content: fmtDec(ctx.total), styles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold', halign: 'right' } }, { content: '', colSpan: 2, styles: { fillColor: NAVY } }]);
+  doc.autoTable({
+    startY: 35, head: [['Date', 'Horaires', 'WO / Notification', 'Bâtiment / lieu', 'Intervention', 'Observations', 'Temps (h)', 'Cumul WO (h)', 'Photos']], body,
+    theme: 'grid', margin: { left: M, right: M, top: 20, bottom: 14 },
+    styles: { font: 'helvetica', fontSize: 8.4, cellPadding: 1.8, lineColor: [205, 214, 224], lineWidth: 0.2, textColor: INK, valign: 'top', overflow: 'linebreak' },
+    headStyles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold', fontSize: 8.2, valign: 'middle' },
+    columnStyles: { 0: { cellWidth: 22 }, 1: { cellWidth: 19 }, 2: { cellWidth: 27 }, 3: { cellWidth: 24 }, 4: { cellWidth: 62 }, 5: { cellWidth: 67 }, 6: { cellWidth: 17, halign: 'right' }, 7: { cellWidth: 19, halign: 'right' }, 8: { cellWidth: 16, halign: 'center' } },
+    didDrawPage: data => { if (data.pageNumber > 1) band(true); }
+  });
+
+  // Annexe photos
+  const withPh = ctx.all.filter(r => (r.photos || []).length);
+  if (st.pdfPhotos && withPh.length) {
+    doc.addPage(); band(true);
+    let y = 22; const colW = (W - 2 * M - 12) / 3, maxH = 62;
+    doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.text('PHOTOS DES INTERVENTIONS', M, y); y += 6;
+    for (const r of withPh) {
+      const imgs = [];
+      for (const id of r.photos) { const f = await DB.get('files', id); if (!f) continue; try { imgs.push(await resizeToData(f.blob, 1000, 0.72)); } catch (e) { } }
+      if (!imgs.length) continue;
+      if (y + 8 + maxH > H - 14) { doc.addPage(); band(true); y = 22; }
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(...INK);
+      doc.text(pdfSafe(`${fmtShort(fromKey(r.date))} · ${fmtRange(r.start, r.end)}${r.wo ? ' · WO ' + r.wo : ''}${r.building ? ' · ' + r.building : ''} — ${(r.request || r.comments || '').replace(/\s+/g, ' ').slice(0, 110)}`), M, y, { maxWidth: W - 2 * M });
+      y += 4;
+      for (let i = 0; i < imgs.length; i++) {
+        const col = i % 3;
+        if (col === 0 && i > 0) y += maxH + 4;
+        if (col === 0 && y + maxH > H - 14) { doc.addPage(); band(true); y = 22; }
+        const im = imgs[i], s = Math.min(colW / im.w, maxH / im.h), w = im.w * s, h = im.h * s;
+        doc.addImage(im.data, 'JPEG', M + col * (colW + 6), y, w, h, undefined, 'FAST');
+      }
+      y += maxH + 9;
+    }
+  }
+  const n = doc.getNumberOfPages(), now = new Date();
+  for (let p = 1; p <= n; p++) {
+    doc.setPage(p); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.8); doc.setTextColor(...MUT);
+    doc.text(pdfSafe(`${who} · ${st.company || 'Cargill'} · généré le ${fmtNum(now)} à ${pad(now.getHours())}h${pad(now.getMinutes())}`), M, H - 6);
+    doc.text(`page ${p} / ${n}`, W - M, H - 6, { align: 'right' });
+  }
+  return doc.output('blob');
+}
+
+/* ---------- Envoi par mail ---------- */
+const b64FromBytes = bytes => { let s = ''; const C = 0x8000; for (let i = 0; i < bytes.length; i += C) s += String.fromCharCode.apply(null, bytes.subarray(i, i + C)); return btoa(s); };
+const wrap76 = s => s.replace(/.{1,76}/g, '$&\r\n');
+const Gmail = {
+  client: null, token: null, exp: 0,
+  enabled() { return !!CONFIG.googleClientId; },
+  async init() {
+    if (this.client || !this.enabled()) return;
+    await loadScript(LIBS.gis);
+    this.client = google.accounts.oauth2.initTokenClient({ client_id: CONFIG.googleClientId, scope: 'https://www.googleapis.com/auth/gmail.send', callback: () => { } });
+  },
+  valid() { return this.token && Date.now() < this.exp; },
+  requestToken() {
+    return new Promise((res, rej) => {
+      if (!this.client) return rej(new Error('Gmail pas prêt, réessaie dans une seconde.'));
+      this.client.callback = r => { if (r.error) return rej(new Error(r.error_description || r.error)); this.token = r.access_token; this.exp = Date.now() + ((r.expires_in || 3600) - 60) * 1000; S.settings.gmailGranted = true; saveSettings(); res(this.token); };
+      this.client.error_callback = e => rej(new Error(e && e.type === 'popup_closed' ? 'Connexion Gmail annulée.' : 'Connexion Gmail impossible.'));
+      this.client.requestAccessToken({ prompt: S.settings.gmailGranted ? '' : 'consent' });
+    });
+  },
+  async send({ to, subject, text, pdf, filename }) {
+    const enc = new TextEncoder(), B = 'cr_' + uid();
+    const subj = '=?UTF-8?B?' + b64FromBytes(enc.encode(subject)) + '?=';
+    const pdfB64 = b64FromBytes(new Uint8Array(await pdf.arrayBuffer()));
+    const mime = [`To: ${to}`, `Subject: ${subj}`, 'MIME-Version: 1.0', `Content-Type: multipart/mixed; boundary="${B}"`, '', `--${B}`, 'Content-Type: text/plain; charset="UTF-8"', 'Content-Transfer-Encoding: base64', '', wrap76(b64FromBytes(enc.encode(text))),
+      `--${B}`, `Content-Type: application/pdf; name="${filename}"`, `Content-Disposition: attachment; filename="${filename}"`, 'Content-Transfer-Encoding: base64', '', wrap76(pdfB64), `--${B}--`, ''].join('\r\n');
+    const r = await fetch('https://gmail.googleapis.com/upload/gmail/v1/users/me/messages/send?uploadType=media', { method: 'POST', headers: { Authorization: 'Bearer ' + this.token, 'Content-Type': 'message/rfc822' }, body: mime });
+    if (r.status === 401) { this.token = null; throw Object.assign(new Error('Session Gmail expirée : touche à nouveau Envoyer.'), { code: 401 }); }
+    if (!r.ok) { let msg = ''; try { msg = (await r.json()).error.message; } catch (e) { } throw new Error('Gmail a refusé l\'envoi' + (msg ? ' : ' + msg : '.')); }
+    return true;
+  }
+};
+const isEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim());
+
+let EXP = null;
+async function openExport(scope, key) {
+  const ctx = exportCtx(scope, key);
+  if (!ctx.all.length) { toast(scope === 'day' ? 'Aucune intervention ce jour-là.' : 'Aucune intervention cette semaine.'); return; }
+  EXP = { ctx, blob: null };
+  openSheet(exportHead(ctx) + `<div id="expBody"><div class="loading"><span>Préparation du PDF…</span><div class="progress indet"><i></i></div></div></div>`);
+  if (Gmail.enabled()) Gmail.init().catch(() => { });
+  try {
+    const blob = await buildPDF(ctx); if (!EXP || EXP.ctx !== ctx) return;
+    EXP.blob = blob; EXP.draft = null;
+    renderExport();
+  } catch (e) {
+    console.error(e);
+    const b = $('#expBody'); if (b) b.innerHTML = `<div class="banner"><b>Le PDF n'a pas pu être créé.</b> Il faut du réseau la première fois pour charger l'outil PDF. Vérifie la connexion et réessaie.<button class="btn btn-secondary" data-act="exp-retry">Réessayer</button></div>`;
+  }
+}
+function exportHead(ctx) { return `<div class="sh-head"><div><h3>${esc(cap(ctx.heading))}</h3><p>${plural(ctx.all.length, 'intervention', 'interventions')} · ${fmtDur(ctx.total)}</p></div><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div>`; }
+function showExportSheet() { openSheet(exportHead(EXP.ctx) + '<div id="expBody"></div>'); renderExport(); }
+async function renderPdfPages(blob) {
+  const lib = await ensurePdfjs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise; const out = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p); const vp0 = page.getViewport({ scale: 1 }); const vp = page.getViewport({ scale: 1400 / vp0.width });
+    const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise; out.push(c.toDataURL('image/jpeg', 0.86));
+  }
+  return out;
+}
+async function showPdfViewer() {
+  if ($('#eTo')) EXP.draft = expValues();
+  openSheet(`<div class="sh-head"><div><h3>Aperçu du PDF</h3><p>${esc(EXP.ctx.filename)}</p></div><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div>
+    <div class="pdf-pages" id="pdfPages"><div class="loading"><span>Affichage des pages…</span><div class="progress indet"><i></i></div></div></div>
+    <button class="btn btn-primary" data-act="exp-back">${ic('back')} Retour à l'envoi</button>`);
+  try { const pages = await renderPdfPages(EXP.blob); const box = $('#pdfPages'); if (box) box.innerHTML = pages.map((u, i) => `<img src="${u}" alt="Page ${i + 1} du PDF">`).join(''); }
+  catch (e) { console.error(e); const box = $('#pdfPages'); if (box) box.innerHTML = '<span class="hint">Aperçu indisponible ici. Télécharge le PDF pour le voir.</span>'; }
+}
+async function saveFile(blob, name) {
+  if (window.claude && typeof window.claude.use === 'function') {
+    const d = await window.claude.use('downloads').catch(() => null);
+    if (d) { try { await d.save({ filename: name, data: blob }); return true; } catch (e) { if (e && e.code === 'declined') return false; } }
+  }
+  downloadBlob(blob, name); return true;
+}
+function renderExport() {
+  const { ctx, blob } = EXP, st = S.settings, b = $('#expBody'); if (!b) return;
+  const gm = Gmail.enabled();
+  b.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">
+    <div class="file-chip">${ic('file')}<span class="fc-name">${esc(ctx.filename)}<small>PDF · ${Math.max(1, Math.round(blob.size / 1024))} Ko</small></span><button type="button" data-act="exp-view">Aperçu</button></div>
+    <div class="field"><label for="eTo">Destinataire (ton n+1)</label><input class="inp" id="eTo" type="email" inputmode="email" autocomplete="email" placeholder="prenom.nom@cargill.com" value="${esc(EXP.draft ? EXP.draft.to : st.managerEmail)}"></div>
+    <div class="field"><label for="eSubj">Objet</label><input class="inp" id="eSubj" value="${esc(EXP.draft ? EXP.draft.subject : ctx.subject)}"></div>
+    <div class="field"><label for="eBody">Message</label><textarea class="inp" id="eBody" rows="7">${esc(EXP.draft ? EXP.draft.text : ctx.body)}</textarea></div>
+    ${gm ? `<button class="btn btn-primary btn-big" data-act="exp-gmail">${ic('send')} Envoyer depuis Gmail</button>
+      <button class="btn btn-secondary" data-act="exp-share">Partager autrement</button>`
+      : `<button class="btn btn-primary btn-big" data-act="exp-share">${ic('send')} Envoyer par mail</button>
+      <span class="hint">Choisis <b>Gmail</b> dans la liste : le PDF, l'objet et le message sont déjà dedans${st.managerEmail ? `, il ne reste qu'à mettre <b>${esc(st.managerEmail)}</b> en destinataire` : ''}.</span>`}
+    <button class="btn btn-secondary" data-act="exp-dl">${ic('dl')} Télécharger le PDF</button>
+  </div>`;
+  $('#eTo').addEventListener('change', e => { const v = e.target.value.trim(); if (!v || isEmail(v)) { S.settings.managerEmail = v; saveSettings(); } });
+}
+function expValues() { return { to: $('#eTo').value.trim(), subject: $('#eSubj').value.trim() || EXP.ctx.subject, text: $('#eBody').value }; }
+async function markSent(how) { S.sent[EXP.ctx.scope + ':' + EXP.ctx.key] = { at: Date.now(), how }; await DB.setKV('sent', S.sent); }
+function downloadBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); }
+async function expShare() {
+  const { to, subject, text } = expValues();
+  const file = new File([EXP.blob], EXP.ctx.filename, { type: 'application/pdf' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: subject, text }); await markSent('share'); closeSheet(); toast('Partagé'); refreshAfterSend(); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  await saveFile(EXP.blob, EXP.ctx.filename);
+  const u = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+  window.open(u, '_blank', 'noopener');
+  toast('PDF téléchargé : glisse-le dans le mail Gmail qui vient de s\'ouvrir.');
+}
+async function expGmail(btn) {
+  const { to, subject, text } = expValues();
+  if (!isEmail(to)) { toast("Indique l'adresse mail de ton n+1.", 'err'); $('#eTo').focus(); return; }
+  S.settings.managerEmail = to; saveSettings();
+  btn.disabled = true; btn.innerHTML = 'Envoi en cours…';
+  try {
+    if (!Gmail.valid()) await Gmail.requestToken();
+    await Gmail.send({ to, subject, text, pdf: EXP.blob, filename: EXP.ctx.filename });
+    await markSent('gmail'); closeSheet(); toast('Envoyé à ' + to); refreshAfterSend();
+  } catch (e) { toast(e.message || 'Envoi impossible.', 'err'); btn.disabled = false; btn.innerHTML = `${ic('send')} Envoyer depuis Gmail`; }
+}
+function refreshAfterSend() { const r = S.route; if (r && (r.name === 'home' || r.name === 'day')) { const y = window.scrollY; renderHome(); window.scrollTo(0, y); } }
+
+/* ---------- Réglages ---------- */
+function renderSettings() {
+  const st = S.settings;
+  const inp = (k, label, attrs = '') => `<div class="field"><label for="s_${k}">${label}</label><input class="inp" id="s_${k}" data-set="${k}" value="${esc(st[k])}" ${attrs}></div>`;
+  const tsel = (k, label) => `<div class="field"><label for="s_${k}">${label}</label><select class="inp mono" id="s_${k}" data-set="${k}">${TIME_OPTS.map(t => `<option value="${t}" ${t === st[k] ? 'selected' : ''}>${fmtH(t)}</option>`).join('')}</select></div>`;
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <button class="icon-btn" data-act="back" data-h="" aria-label="Retour">${ic('back')}</button>
+    <div class="tb-title"><b>Réglages</b><small>Reporting ${esc(st.company)}</small></div>
+  </div></header>
+  <main class="wrap">
+    <section class="fsec"><h3 class="fsec-title">Toi</h3>
+      ${inp('name', 'Nom affiché sur les comptes rendus', 'autocomplete="name"')}
+      <div class="row2">${inp('company', 'Société')}${inp('site', 'Site (facultatif)', 'placeholder="ex. usine de …"')}</div>
+    </section>
+    <section class="fsec"><h3 class="fsec-title">Ton n+1</h3>
+      ${inp('managerName', 'Nom', 'placeholder="Prénom Nom"')}
+      ${inp('managerEmail', 'Adresse mail', 'type="email" inputmode="email" placeholder="prenom.nom@cargill.com"')}
+    </section>
+    <section class="fsec"><h3 class="fsec-title">Envoi au n+1</h3>
+      <div class="seg-ctl" role="radiogroup" aria-label="Fréquence d'envoi">
+        <button type="button" role="radio" aria-checked="${st.sendMode === 'day'}" class="${st.sendMode === 'day' ? 'on' : ''}" data-act="send-mode" data-v="day">Chaque jour</button>
+        <button type="button" role="radio" aria-checked="${st.sendMode !== 'day'}" class="${st.sendMode !== 'day' ? 'on' : ''}" data-act="send-mode" data-v="week">Chaque semaine</button>
+      </div>
+      <span class="hint">${st.sendMode === 'day' ? 'Un bouton « Envoyer » apparaît sur chaque journée pas encore envoyée. Le reporting de la semaine reste disponible.' : 'Le bouton « Envoyer le reporting de la semaine » est mis en avant. Une journée peut toujours être envoyée seule depuis le jour ouvert.'}</span>
+    </section>
+    <section class="fsec"><h3 class="fsec-title">Journée type</h3>
+      <div class="row2">${tsel('dayStart', 'Début')}${tsel('dayEnd', 'Fin')}</div>
+      <div class="row2">${tsel('lunchStart', 'Pause : début')}${tsel('lunchEnd', 'Pause : fin')}</div>
+      <span class="hint">Sert aux raccourcis « Journée », « Matin », « Après-midi » et au calcul du temps passé.</span>
+    </section>
+    <section class="fsec"><h3 class="fsec-title">PDF</h3>
+      <label class="toggle"><span>Ajouter les photos en annexe du PDF</span><input type="checkbox" id="s_pdfPhotos" ${st.pdfPhotos ? 'checked' : ''}></label>
+    </section>
+    ${Gmail.enabled() ? `<section class="fsec"><h3 class="fsec-title">Gmail</h3><span class="hint">${st.gmailGranted ? "Gmail est autorisé : l'appli envoie les comptes rendus directement depuis ta boîte." : "Au premier envoi, Google te demandera d'autoriser l'appli à envoyer des mails depuis ta boîte Gmail."}</span>${st.gmailGranted ? `<button class="btn btn-secondary" data-act="gmail-forget">Ne plus utiliser Gmail directement</button>` : ''}</section>` : ''}
+    <section class="fsec"><h3 class="fsec-title">Sauvegarde</h3>
+      <span class="hint">Tout est enregistré sur ce téléphone uniquement. Fais une sauvegarde de temps en temps (photos comprises) et garde-la dans ton Drive ou tes mails.</span>
+      <div class="btn-row stack"><button class="btn btn-secondary" data-act="backup">${ic('dl')} Sauvegarder mes données</button>
+      <label class="btn btn-secondary">Restaurer une sauvegarde<input type="file" id="restoreIn" accept="application/json,.json" hidden></label></div>
+      <span class="small">${plural(S.reports.length, 'compte rendu enregistré', 'comptes rendus enregistrés')} · version ${APP_VERSION}</span>
+    </section>
+  </main>`;
+  $$('[data-set]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { S.settings[el.dataset.set] = el.value; saveSettings(); }));
+  $('#s_pdfPhotos').onchange = e => { S.settings.pdfPhotos = e.target.checked; saveSettings(); };
+  $('#restoreIn').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) restoreBackup(f); };
+}
+async function makeBackup() {
+  toast('Préparation de la sauvegarde…');
+  const files = await DB.all('files'); const outFiles = [];
+  for (const f of files) outFiles.push({ id: f.id, kind: f.kind, type: f.type, name: f.name, createdAt: f.createdAt, data: b64FromBytes(new Uint8Array(await f.blob.arrayBuffer())) });
+  const json = JSON.stringify({ app: 'reporting-cargill', version: 1, exportedAt: new Date().toISOString(), settings: S.settings, reports: S.reports, sent: S.sent, files: outFiles });
+  const name = `reporting-cargill-sauvegarde-${todayKey()}.json`;
+  const blob = new Blob([json], { type: 'application/json' }); const file = new File([blob], name, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: 'Sauvegarde Reporting' }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  if (await saveFile(blob, name)) toast('Sauvegarde enregistrée');
+}
+async function restoreBackup(file) {
+  let data; try { data = JSON.parse(await file.text()); } catch (e) { toast("Ce fichier n'est pas une sauvegarde lisible.", 'err'); return; }
+  if (!data || data.app !== 'reporting-cargill' || !Array.isArray(data.reports)) { toast("Ce fichier n'est pas une sauvegarde de l'appli.", 'err'); return; }
+  const ok = await confirmSheet({ title: 'Restaurer la sauvegarde ?', text: `${plural(data.reports.length, 'compte rendu', 'comptes rendus')} du ${String(data.exportedAt || '').slice(0, 10)}. Ils s'ajoutent à ceux du téléphone (les mêmes sont remplacés).`, ok: 'Restaurer' });
+  if (!ok) return;
+  for (const f of data.files || []) {
+    const bin = atob(f.data); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    await DB.put('files', { id: f.id, kind: f.kind, type: f.type, name: f.name, createdAt: f.createdAt, blob: new Blob([u8], { type: f.type }) });
+  }
+  for (const r of data.reports) await DB.put('reports', r);
+  if (data.settings) { S.settings = { ...DEFAULT_SETTINGS, ...data.settings }; await DB.setKV('settings', S.settings); }
+  if (data.sent) { S.sent = { ...data.sent, ...S.sent }; await DB.setKV('sent', S.sent); }
+  S.reports = await DB.all('reports');
+  toast('Sauvegarde restaurée'); renderSettings();
+}
+
+/* ---------- Clics ---------- */
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const a = el.dataset.act, k = el.dataset.k;
+  switch (a) {
+    case 'go': go(el.dataset.h); break;
+    case 'back': back(el.dataset.h || ''); break;
+    case 'new': go('cr/nouveau?date=' + k); break;
+    case 'edit': go('cr/' + el.dataset.id); break;
+    case 'toggle-day': {
+      const opening = !S.openDays.has(k);
+      S.openDays.clear(); if (opening) S.openDays.add(k);
+      const before = el.getBoundingClientRect().top, y = window.scrollY;
+      renderHome(); window.scrollTo(0, y);
+      const head = $(`#day-${k} .day-head`);
+      if (head) { const shift = head.getBoundingClientRect().top - before; if (shift) window.scrollBy(0, shift); }
+      break;
+    }
+    case 'toggle-week': {
+      const cur = el.dataset.cur === '1', key = cur ? '!' + k : k;
+      S.openWeeks.has(key) ? S.openWeeks.delete(key) : S.openWeeks.add(key); { const y = window.scrollY; renderHome(); window.scrollTo(0, y); } break;
+    }
+    case 'pick-date': openCalendar(todayKey(), key => { focusDay(key); renderHome(); }, 'Aller à une date'); break;
+    case 'export-day': openExport('day', k); break;
+    case 'export-week': openExport('week', k); break;
+    case 'exp-retry': openExport(EXP.ctx.scope, EXP.ctx.key); break;
+    case 'exp-view': if (EXP && EXP.blob) showPdfViewer(); break;
+    case 'exp-back': if (EXP && EXP.blob) showExportSheet(); break;
+    case 'exp-dl': if (EXP && EXP.blob) { if (await saveFile(EXP.blob, EXP.ctx.filename)) toast('PDF enregistré'); } break;
+    case 'exp-share': expShare(); break;
+    case 'exp-gmail': expGmail(el); break;
+    case 'sheet-close': closeSheet(); break;
+    // Formulaire
+    case 'form-save': saveForm(); break;
+    case 'form-save-next': saveForm(true); break;
+    case 'form-cancel': cancelForm(); break;
+    case 'form-delete': deleteReport(); break;
+    case 'form-date': openCalendar(F.date, key => { F.date = key; const d = fromKey(key); $('#fDateTxt').textContent = cap(fmtLongY(d)); $('#fDateWk').textContent = 'Semaine ' + isoWeek(d).week; refreshCalc(); scheduleDraft(); }, 'Date de l\'intervention'); break;
+    case 'preset': F.start = el.dataset.a; F.end = el.dataset.b; $('#fStart').value = F.start; $('#fEnd').value = F.end; F.durationManual = false; refreshCalc(); markPresets(); scheduleDraft(); break;
+    case 'dur-auto': F.durationManual = false; refreshCalc(); scheduleDraft(); break;
+    case 'cum-auto': F.cumulManual = null; refreshCalc(); scheduleDraft(); break;
+    case 'mic': toggleMic(); break;
+    case 'ph-rm': { const id = el.dataset.id; F.photos = F.photos.filter(x => x !== id); if (F.added.includes(id)) { F.added = F.added.filter(x => x !== id); DB.del('files', id); } else F.removed.push(id); renderPhotos(); scheduleDraft(); break; }
+    case 'wo-view': { const u = await fileURL(F.woFile); if (u) window.open(u, '_blank'); break; }
+    case 'wo-remove': { const id = F.woFile; if (F.added.includes(id)) { F.added = F.added.filter(x => x !== id); DB.del('files', id); } else F.removed.push(id); F.woFile = null; F.woRead = null; renderWoStatus('none'); scheduleDraft(); break; }
+    case 'wo-reread': readWo(); break;
+    case 'wo-demo': { const bin = atob(DEMO_WO_B64); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); onWoFile(new File([u8], 'WO_exemple_418320155.pdf', { type: 'application/pdf' })); break; }
+    case 'wo-use': {
+      const c = F.woRead.conflicts.find(x => x.k === el.dataset.k); if (!c) break;
+      F[c.k] = c.v; $('#' + MAP_FIELDS[c.k]).value = c.v; F.woRead.conflicts = F.woRead.conflicts.filter(x => x !== c); F.woRead.filled.push(c.k);
+      const rt = $('#rt-' + c.k); if (rt) rt.hidden = false; refreshCalc(); renderWoStatus('done'); scheduleDraft(); break;
+    }
+    case 'wo-reuse': {
+      const h = woHistory(F.wo, F); const last = h && h.all[h.all.length - 1]; if (!last) break;
+      for (const key of ['building', 'request', 'location', 'equipment']) if (!F[key] && last[key]) { F[key] = last[key]; $('#' + MAP_FIELDS[key]).value = last[key]; }
+      if (last.location || last.equipment) $('#moreBox').setAttribute('open', '');
+      refreshCalc(); scheduleDraft(); break;
+    }
+    case 'draft-resume': {
+      const d = await DB.getKV('draft', null); if (!d) break;
+      F = { ...d, added: d.added || [], removed: d.removed || [] }; drawForm(null); break;
+    }
+    case 'draft-drop': {
+      const d = await DB.getKV('draft', null);
+      if (d && d.added) for (const id of d.added) if (!F.photos.includes(id) && F.woFile !== id) await DB.del('files', id);
+      await clearDraft(); $('#draftBanner')?.remove(); break;
+    }
+    // Réglages
+    case 'backup': makeBackup(); break;
+    case 'send-mode': S.settings.sendMode = el.dataset.v === 'day' ? 'day' : 'week'; saveSettings(); { const y = window.scrollY; renderSettings(); window.scrollTo(0, y); } break;
+    case 'gmail-forget': try { if (window.google && Gmail.token) google.accounts.oauth2.revoke(Gmail.token); } catch (e) { } S.settings.gmailGranted = false; Gmail.token = null; saveSettings(); renderSettings(); toast('Gmail ne sera plus utilisé directement'); break;
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('#sheetRoot').firstChild) closeSheet();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('div[role=button][data-act]')) { e.preventDefault(); e.target.click(); }
+});
+
+/* ---------- Démarrage ---------- */
+async function cleanupOrphans() {
+  try {
+    const draft = await DB.getKV('draft', null);
+    const used = new Set();
+    for (const r of S.reports) { (r.photos || []).forEach(id => used.add(id)); if (r.woFile) used.add(r.woFile); }
+    if (draft) { (draft.photos || []).forEach(id => used.add(id)); if (draft.woFile) used.add(draft.woFile); }
+    const files = await DB.all('files');
+    for (const f of files) if (!used.has(f.id) && Date.now() - (f.createdAt || 0) > 6 * 3600e3) await DB.del('files', f.id);
+  } catch (e) { }
+}
+async function seedPreview() {
+  if (!PREVIEW || S.reports.length) return;
+  let n = 0;
+  const mk = (date, start, end, request, o = {}) => ({ id: uid() + n, date, start, end, wo: '', notif: '', building: '', location: '', equipment: '', request, comments: '', duration: 'duration' in o ? o.duration : autoDuration(start, end), durationManual: 'duration' in o, cumulManual: null, photos: [], woFile: null, createdAt: Date.now() + (n++), updatedAt: Date.now(), ...o });
+  const rows = [
+    mk('2026-09-21', '07:00', '15:00', 'Pose des panneaux signalétiques'),
+    mk('2026-09-22', '', '', 'Pose des panneaux signalétiques', { comments: 'Horaires à préciser', duration: 420 }),
+    mk('2026-10-01', '', '', 'Préparation faïence laboratoire', { duration: null }),
+    mk('2026-10-02', '', '', 'Déplacement réfrigérateur, pose de grilles et panneaux dans le hall administratif', { comments: 'Horaires à préciser', duration: null }),
+    mk('2026-10-05', '07:00', '12:00', 'Préparation béton et traitement des fers', { wo: '418319320', building: 'Bât. 27' }),
+    mk('2026-10-05', '13:00', '14:15', 'Deuxième couche plafond'),
+    mk('2026-10-05', '14:15', '16:00', 'Déplacement meubles cuisine pour nettoyage GSF'),
+    mk('2026-10-06', '07:00', '09:00', 'Rangement bureau F. Germont vers base vie'),
+    mk('2026-10-06', '14:00', '15:00', 'Point reporting et WO avec F. Germont'),
+    mk('2026-10-07', '07:00', '15:00', 'Réparation mortier poteau et sous-face de poutre', { wo: '418319320', building: 'Bât. 27' })
+  ];
+  for (const r of rows) await DB.put('reports', r);
+  S.reports = await DB.all('reports');
+  S.openWeeks.add('2026-10-05'); S.openDays.clear(); S.openDays.add('2026-10-05');
+}
+(async function start() {
+  await DB.open();
+  S.settings = { ...DEFAULT_SETTINGS, ...(await DB.getKV('settings', {})) };
+  S.sent = await DB.getKV('sent', {});
+  S.reports = await DB.all('reports');
+  await seedPreview();
+  route();
+  cleanupOrphans();
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => { });
+  if (!PREVIEW && 'serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });
+})();
+</script>
+</body>
+</html>
